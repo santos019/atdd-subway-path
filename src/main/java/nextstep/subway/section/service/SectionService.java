@@ -38,8 +38,6 @@ public class SectionService {
         Station downStation = stationService.getStationByIdOrThrow(sectionRequest.getDownStationId());
         Section section = Section.of(upStation, downStation, sectionRequest.getDistance(), sections.getCurrentSectionsPosition() + 1);
 
-        sections.validateCreateSection(sections, upStation.getId(), downStation.getId());
-
         sections.addSection(section);
         lineService.saveLine(line);
 
@@ -52,8 +50,6 @@ public class SectionService {
 
         Line line = lineService.getLineByIdOrThrow(lineId);
         Sections sections = line.getSections();
-
-        sections.validateDeleteSection(sections, stationId);
 
         sections.removeSection(section);
 

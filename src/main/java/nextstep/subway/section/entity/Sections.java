@@ -56,14 +56,20 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        validateCreateSection(this, section.getUpStation().getId(), section.getDownStation().getId());
         sections.add(section);
     }
 
     public void removeSection(Section section) {
+        validateDeleteSection(this, section.getDownStation().getId());
         sections.remove(section);
     }
 
     public void validateCreateSection(Sections sections, Long upStationId, Long downStationId) {
+        if (sections.getSections().size() == 0) {
+            return;
+        }
+
         List<Long> sectionsStation = convertToStationIds(sections);
 
         validateSectionsLastDownStationIdIsSameUpStationId(sections.getLastStation().getId(), upStationId);
