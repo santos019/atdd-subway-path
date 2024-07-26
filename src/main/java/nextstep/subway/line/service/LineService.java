@@ -9,7 +9,6 @@ import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.section.entity.Section;
 import nextstep.subway.section.entity.Sections;
-import nextstep.subway.section.repository.SectionRepository;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.service.StationService;
@@ -26,13 +25,11 @@ import static nextstep.subway.converter.LineConverter.convertToLineResponseByLin
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
     private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, SectionRepository sectionRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
