@@ -1,14 +1,16 @@
 package nextstep.subway.line;
 
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.line.dto.ModifyLineRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.DatabaseCleanup;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
@@ -18,14 +20,24 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
 public class LineAcceptanceTest {
+
+    @Autowired
+    DatabaseCleanup databaseCleanup;
+
+    @BeforeEach
+    public void setup() {
+
+        databaseCleanup.execute();
+
+    }
 
     /* Given: 새로운 지하철 노선 정보를 입력하고,
        When: 관리자가 노선을 생성하면,
        Then: 해당 노선이 생성되고 노선 목록에 포함된다. */
     @DisplayName("지하철 노선을 생성한다")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void createLine() {
         // given
         List<StationResponse> 지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역"));
@@ -44,7 +56,6 @@ public class LineAcceptanceTest {
        Then: 모든 지하철 노선 목록이 반환된다. */
     @DisplayName("전체 지하철 노선을 조회한다")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void retrieveAllLine() {
         // given
         List<StationResponse> 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
@@ -71,7 +82,6 @@ public class LineAcceptanceTest {
        Then: 해당 노선의 정보가 반환된다. */
     @DisplayName("지하철 노선을 조회한다")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void retrieveLine() {
         // when
         List<StationResponse> 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
@@ -93,7 +103,6 @@ public class LineAcceptanceTest {
        Then: 해당 노선의 정보가 수정된다. */
     @DisplayName("지하철 노선을 수정한다")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void modifyStation() {
         // given
         List<StationResponse> 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
@@ -116,7 +125,6 @@ public class LineAcceptanceTest {
        Then: 해당 노선이 삭제되고 노선 목록에서 제외된다. */
     @DisplayName("지하철 노선을 삭제한다")
     @Test
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void deleteStation() {
         // given
         List<StationResponse> 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));

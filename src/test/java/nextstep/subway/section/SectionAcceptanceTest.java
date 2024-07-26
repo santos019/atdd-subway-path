@@ -1,15 +1,17 @@
 package nextstep.subway.section;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.jdbc.Sql;
 import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.utils.DatabaseCleanup;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static nextstep.subway.common.constant.ErrorCode.*;
 import static nextstep.subway.util.LineStep.지하철_노선_생성;
@@ -19,7 +21,11 @@ import static nextstep.subway.util.StationStep.지하철_역_등록;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@ActiveProfiles("test")
 public class SectionAcceptanceTest {
+
+    @Autowired
+    DatabaseCleanup databaseCleanup;
 
     private StationResponse 강남역;
     private StationResponse 선릉역;
@@ -27,8 +33,10 @@ public class SectionAcceptanceTest {
     private LineResponse 신분당선;
 
     @BeforeEach
-    @Sql(scripts = "classpath:truncate-tables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     public void setup() {
+
+        databaseCleanup.execute();
+
         강남역 = 지하철_역_등록("강남역");
         선릉역 = 지하철_역_등록("선릉역");
         삼성역 = 지하철_역_등록("삼성역");

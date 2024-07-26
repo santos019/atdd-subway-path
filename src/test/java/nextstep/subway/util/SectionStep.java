@@ -3,10 +3,10 @@ package nextstep.subway.util;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class SectionStep {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(sectionRequest)
-                .when().post("/lines/"+ lineId +"/sections")
+                .when().post("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
 
@@ -39,7 +39,7 @@ public class SectionStep {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/"+ lineId +"/sections?stationId=" + stationId)
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
 
@@ -50,7 +50,7 @@ public class SectionStep {
 
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/"+ lineId +"/sections?stationId=" + stationId)
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract().as(ErrorResponse.class);
     }

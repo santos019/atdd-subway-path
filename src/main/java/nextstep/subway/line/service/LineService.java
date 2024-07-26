@@ -1,7 +1,5 @@
 package nextstep.subway.line.service;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.line.dto.CreateLineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
@@ -15,6 +13,8 @@ import nextstep.subway.section.repository.SectionRepository;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.service.StationService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public class LineService {
         Station upStation = stationService.getStationByIdOrThrow(createLineRequest.getUpStationId());
         Station downStation = stationService.getStationByIdOrThrow(createLineRequest.getDownStationId());
 
-        Section section = Section.of(upStation, downStation, createLineRequest.getDistance(), 0L);
+        Section section = Section.of(upStation, downStation, createLineRequest.getDistance());
 
         Sections sections = new Sections();
         sections.addSection(section);
