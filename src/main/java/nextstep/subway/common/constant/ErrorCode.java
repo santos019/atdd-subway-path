@@ -9,8 +9,11 @@ public enum ErrorCode {
     SECTION_NOT_FOUND(400, "SECTION_NOT_FOUND", "구간을 찾을 수 없습니다."),
     SECTION_FIRST_STATION_NOT_FOUND(400, "SECTION_NOT_FOUND", "처음 구간을 찾을 수 없습니다."),
     SECTION_LAST_STATION_NOT_FOUND(400, "SECTION_NOT_FOUND", "마지막 구간을 찾을 수 없습니다."),
+    SECTION_UP_STATION_NOT_FOUND(400, "SECTION_UP_STATION_NOT_FOUND", "상행 구간의 역을 찾을 수 없습니다."),
+    SECTION_DOWN_STATION_NOT_FOUND(400, "SECTION_DOWN_STATION_NOT_FOUND", "하행 구간의 역을 찾을 수 없습니다."),
+    SECTION_DISTANCE_TOO_SHORT(400, "SECTION_DISTANCE_TOO_SHORT", "새로운 구간의 길이는 기존의 구간 길이보다 길어야합니다."),
     SECTION_NOT_MATCH(400, "SECTION_NOT_MATCH", "새로운 구간의 상행역은 등록되어 있는 하행 종점역이어야 합니다."),
-    SECTION_ALREADY_EXIST(400, "SECTION_NOT_MATCH", "새로운 구간의 상행역은 등록되어 있는 하행 종점역이어야 합니다."),
+    SECTION_ALREADY_EXIST(400, "SECTION_ALREADY_EXIST", "새로운 구간의 상행역과 하행역이 이미 등록되어 있습니다."),
     SECTION_NOT_PERMISSION_NOT_LAST_DESCENDING_STATION(400, "SECTION_NOT_PERMISSION_NOT_LAST_DESCENDING_STATION", "하행 종점역만 삭제할 수 있습니다."),
     SECTION_NOT_PERMISSION_COUNT_TOO_LOW(400, "SECTION_NOT_PERMISSION_COUNT_TOO_LOW", "구간은 최소 1개 이상이어야 합니다."),
     ERROR_MESSAGE(499, "ERROR_MESSAGE", "관리자에게 문의하세요.");

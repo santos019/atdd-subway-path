@@ -1,6 +1,7 @@
 package nextstep.subway.section.entity;
 
 import nextstep.subway.section.exception.SectionException;
+import nextstep.subway.station.entity.Station;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -28,15 +29,32 @@ public class Sections {
 
     public void addSection(Section section) {
         if (!sections.isEmpty()) {
-            Section lastSection = getLastSection();
-            if (!section.getUpStation().equals(lastSection.getDownStation())) {
-                throw new SectionException(String.valueOf(SECTION_NOT_MATCH));
+
+            checkDuplicateSectionByStation(section.getUpStation(), section.getDownStation());
+
+            if (isFirstSectionAdd(section.getUpStation().getId())) {
+                Section originalFirstSection = getSectionByUpStationId(section.getDownStation().getId());
+                originalFirstSection.setPreviousSection(section);
+                section.setNextSection(originalFirstSection);
+
+            } else {
+                Section originalPrevSection = getSectionByDownStationId(section.getUpStation().getId());
+                Section originalPrevSNextSection = originalPrevSection.getNextSection();
+
+                originalPrevSection.setNextSection(section);
+
+                if (originalPrevSNextSection != null) {
+                    checkSectionDistance(originalPrevSNextSection, section);
+
+                    section.setPreviousSection(originalPrevSection);
+                    section.setNextSection(originalPrevSNextSection);
+                    originalPrevSNextSection.setPreviousSection(section);
+                    originalPrevSNextSection.setUpStation(section.getDownStation());
+                    originalPrevSNextSection.setDistance(originalPrevSNextSection.getDistance() - section.getDistance());
+                } else {
+                    section.setPreviousSection(originalPrevSection);
+                }
             }
-            if (sections.stream().anyMatch(s -> s.getDownStation().equals(section.getDownStation()))) {
-                throw new SectionException(String.valueOf(SECTION_ALREADY_EXIST));
-            }
-            lastSection.setNextSection(section);
-            section.setPreviousSection(lastSection);
         }
         sections.add(section);
     }
@@ -72,5 +90,50 @@ public class Sections {
                 .filter(section -> section.getNextSection() == null)
                 .findFirst()
                 .orElseThrow(() -> new SectionException(String.valueOf(SECTION_LAST_STATION_NOT_FOUND)));
+    }
+
+    public Section getSectionByUpStationId(Long upStationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId() == upStationId)
+                .findFirst()
+                .orElseThrow(() -> new SectionException(String.valueOf(SECTION_NOT_FOUND)));
+    }
+
+    public Section getSectionByDownStationId(Long downStationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().getId() == downStationId)
+                .findFirst()
+                .orElseThrow(() -> new SectionException(String.valueOf(SECTION_NOT_FOUND)));
+    }
+
+    public void checkDuplicateSectionByStation(Station upStation, Station downStation) {
+        boolean isUpStationExist = getSectionByUpStation(upStation);
+        boolean isDownStationExist = getSectionByDownStation(downStation);
+
+        if(isUpStationExist && isDownStationExist) {
+            throw new SectionException(String.valueOf(SECTION_ALREADY_EXIST));
+        }
+    }
+
+    public void checkSectionDistance(Section originalSection, Section section) {
+        if (originalSection.getDistance() <= section.getDistance()) {
+            throw new SectionException(String.valueOf(SECTION_DISTANCE_TOO_SHORT));
+        }
+    }
+
+    public boolean getSectionByUpStation(Station upStation) {
+        return sections.stream().anyMatch(section -> section.getUpStation().equals(upStation));
+    }
+
+    public boolean getSectionByDownStation(Station downStation) {
+        return sections.stream().anyMatch(section -> section.getDownStation().equals(downStation));
+    }
+
+    public boolean isFirstSectionAdd(Long downStationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().getId() == downStationId)
+                .findFirst()
+                .isEmpty();
+
     }
 }

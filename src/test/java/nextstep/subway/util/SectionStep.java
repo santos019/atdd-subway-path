@@ -5,24 +5,29 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.section.dto.SectionRequest;
+import nextstep.subway.section.dto.SectionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-
-import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class SectionStep {
 
-    public static List<String> 지하철_구간_등록(Long lineId, SectionRequest sectionRequest) {
+    public static SectionResponse 지하철_구간_등록(Long lineId, SectionRequest sectionRequest) {
 
-        return RestAssured.given().log().all()
+        SectionResponse sectionResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(sectionRequest)
                 .when().post("/lines/" + lineId + "/sections")
                 .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+                .extract().response().body().as(SectionResponse.class);
 
+        assertThat(sectionResponse.getLineId()).isEqualTo(lineId);
+        assertThat(sectionResponse.getDistance()).isEqualTo(sectionRequest.getDistance());
+        assertThat(sectionResponse.getUpStationResponse().getId()).isEqualTo(sectionRequest.getUpStationId());
+        assertThat(sectionResponse.getDownStationResponse().getId()).isEqualTo(sectionRequest.getDownStationId());
+
+        return sectionResponse;
     }
 
     public static ErrorResponse 지하철_구간_등록_실패(Long lineId, SectionRequest sectionRequest) {

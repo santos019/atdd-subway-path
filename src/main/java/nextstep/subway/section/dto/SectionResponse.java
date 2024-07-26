@@ -14,6 +14,11 @@ public class SectionResponse {
 
     private Long distance;
 
+    public SectionResponse() {
+    }
+
+    ;
+
     public SectionResponse(Long lineId, Long sectionId, StationResponse upStationResponse, StationResponse downStationResponse, Long distance) {
         this.lineId = lineId;
         this.sectionId = sectionId;
@@ -29,5 +34,21 @@ public class SectionResponse {
 
     public Long getLineId() {
         return lineId;
+    }
+
+    public Long getSectionId() {
+        return sectionId;
+    }
+
+    public StationResponse getUpStationResponse() {
+        return upStationResponse;
+    }
+
+    public StationResponse getDownStationResponse() {
+        return downStationResponse;
+    }
+
+    public Long getDistance() {
+        return distance;
     }
 }

@@ -73,6 +73,14 @@ public class Section {
         this.previousSection = previousSection;
     }
 
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDistance(Long distance) {
+        this.distance = distance;
+    }
+
     public Section getNextSection() {
         return nextSection;
     }
