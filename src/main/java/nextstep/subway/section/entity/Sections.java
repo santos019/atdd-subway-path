@@ -117,7 +117,7 @@ public class Sections {
 
     public void checkSectionDistance(Section originalSection, Section section) {
         if (originalSection.getDistance() <= section.getDistance()) {
-            throw new SectionException(String.valueOf(SECTION_DISTANCE_TOO_SHORT));
+            throw new SectionException(String.valueOf(SECTION_DISTANCE_LESS_THAN_EXISTING));
         }
     }
 

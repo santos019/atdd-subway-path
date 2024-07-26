@@ -15,13 +15,23 @@ public class Station {
     protected Station() {
     }
 
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Station(String name) {
         this.name = name;
     }
 
-    public static Station of (String name) {
+    public static Station of(String name) {
         return new Station(name);
     }
+
+    public static Station of(Long id, String name) {
+        return new Station(id, name);
+    }
+
 
     public Long getId() {
         return id;

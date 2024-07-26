@@ -106,6 +106,24 @@ public class SectionAcceptanceTest {
     }
 
     /* Given: 지하철 역과 지하철 노선이 등록되어 있고,
+   When: 관리자가 지하철 노선의 마지막 구간으로 새로운 구간을 등록 요청하면,
+   Then: 지하철 노선에 관리자가 등록 요청한 새로운 구간이 노선의 마지막 구간으로 추가된다. */
+    @DisplayName("지하철 기존 구간의 마지막 구간으로 새로운 구간을 등록한다.")
+    @Test
+    public void addSection_success_4() {
+        // given ...
+        지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
+
+        // when
+        지하철_구간_등록(신분당선.getId(), SectionRequest.of(삼성역.getId(), 언주역.getId(), 4L));
+        LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
+
+        // then
+        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(언주역));
+
+    }
+
+    /* Given: 지하철 역과 지하철 노선이 등록되어 있고,
        When: 관리자가 지하철 노선에 기존 구간 사이로 기존 구간의 Distance보다 길거나 같은 Distance를 가진 새로운 구간을 등록 요청하면,
        Then: 관리자의 구간 추가 요청은 실패한다. */
     @DisplayName("지하철 구간 등록에 실패한다. 기존 구간의 Distance보다 길거나 같은 Distance를 가진 새로운 구간은 생성될 수 없다.")
@@ -118,7 +136,7 @@ public class SectionAcceptanceTest {
         ErrorResponse errorResponse = 지하철_구간_등록_실패(신분당선.getId(), SectionRequest.of(선릉역.getId(), 언주역.getId(), 10L));
 
         // then
-        Assertions.assertEquals(errorResponse.getCode(), SECTION_DISTANCE_TOO_SHORT.getCode());
+        Assertions.assertEquals(errorResponse.getCode(), SECTION_DISTANCE_LESS_THAN_EXISTING.getCode());
 
     }
 
@@ -153,7 +171,7 @@ public class SectionAcceptanceTest {
     /* Given: 지하철 역과 지하철 노선이 등록되어 있고,
         When: 관리자가 지하철 노선에 등록되어 있지 않은 상행역과 하행역을 가진 새로운 구간을 생성 요청하면,
         Then: 관리자의 구간 추가 요청은 실패한다. */
-    @DisplayName("지하철 구간 등록에 실패한다. 새로운 구간의 상행역과 하행역 둘 중 하나만 노선에 등록되어 있어야 생성 가능하다.")
+    @DisplayName("지하철 구간 등록에 실패한다. 새로운 구간의 상행역과 하행역 둘 중 하나가 노선에 등록되어 있지않으면 새로운 구간은 생성될 수 없다.")
     @Test
     public void addSection_fail_3() {
         // given ...

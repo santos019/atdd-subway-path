@@ -1,11 +1,14 @@
 package nextstep.subway.section.entity;
 
+import nextstep.subway.section.exception.SectionException;
 import nextstep.subway.station.entity.Station;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
+
+import static nextstep.subway.common.constant.ErrorCode.SECTION_DISTANCE_TOO_SHORT;
 
 @Entity
 public class Section {
@@ -42,6 +45,10 @@ public class Section {
     }
 
     public static Section of(Station upStation, Station downStation, Long distance) {
+        if(distance < 1) {
+            throw new SectionException(String.valueOf(SECTION_DISTANCE_TOO_SHORT));
+        }
+
         return new Section(upStation, downStation, distance);
     }
 
