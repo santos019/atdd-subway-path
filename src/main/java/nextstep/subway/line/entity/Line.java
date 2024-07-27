@@ -77,8 +77,4 @@ public class Line {
         return this.sections;
     }
 
-    public void setDistance(Long distance) {
-        this.distance = distance;
-    }
-
 }
