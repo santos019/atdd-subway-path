@@ -28,35 +28,49 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        if (!sections.isEmpty()) {
-
-            checkDuplicateSectionByStation(section.getUpStation(), section.getDownStation());
-
-            if (isFirstSectionAdd(section.getUpStation().getId())) {
-                Section originalFirstSection = getSectionByUpStationId(section.getDownStation().getId());
-                originalFirstSection.setPreviousSection(section);
-                section.setNextSection(originalFirstSection);
-
-            } else {
-                Section originalPrevSection = getSectionByDownStationId(section.getUpStation().getId());
-                Section originalPrevSNextSection = originalPrevSection.getNextSection();
-
-                originalPrevSection.setNextSection(section);
-
-                if (originalPrevSNextSection != null) {
-                    checkSectionDistance(originalPrevSNextSection, section);
-
-                    section.setPreviousSection(originalPrevSection);
-                    section.setNextSection(originalPrevSNextSection);
-                    originalPrevSNextSection.setPreviousSection(section);
-                    originalPrevSNextSection.setUpStation(section.getDownStation());
-                    originalPrevSNextSection.setDistance(originalPrevSNextSection.getDistance() - section.getDistance());
-                } else {
-                    section.setPreviousSection(originalPrevSection);
-                }
-            }
+        if (sections.isEmpty()) {
+            sections.add(section);
+            return;
         }
+
+        checkDuplicateSectionByStation(section.getUpStation(), section.getDownStation());
+
+        if (isFirstSectionAdd(section.getUpStation().getId())) {
+            addFirstSection(section);
+            return;
+        }
+
+        addMiddleSections(section);
+    }
+
+    private void addFirstSection(Section section) {
+        Section originalFirstSection = getSectionByUpStationId(section.getDownStation().getId());
+        originalFirstSection.setPreviousSection(section);
+        section.setNextSection(originalFirstSection);
         sections.add(section);
+    }
+
+    private void addMiddleSections(Section section) {
+        Section originalPrevSection = getSectionByDownStationId(section.getUpStation().getId());
+        Section originalPrevSNextSection = originalPrevSection.getNextSection();
+        originalPrevSection.setNextSection(section);
+
+        if (originalPrevSNextSection != null) {
+            updateSectionData(section, originalPrevSNextSection);
+            return;
+        }
+
+        section.setPreviousSection(originalPrevSection);
+        sections.add(section);
+    }
+
+    private void updateSectionData(Section newSection, Section nextSection) {
+        checkSectionDistance(nextSection, newSection);
+        newSection.setPreviousSection(nextSection.getPreviousSection());
+        newSection.setNextSection(nextSection);
+        nextSection.setPreviousSection(newSection);
+        nextSection.setUpStation(newSection.getDownStation());
+        nextSection.setDistance(nextSection.getDistance() - newSection.getDistance());
     }
 
     public void removeSection(Section section) {
