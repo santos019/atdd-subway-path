@@ -140,20 +140,6 @@ public class SectionAcceptanceTest {
 
     }
 
-//    /* Given: 지하철 역과 지하철 노선이 등록되어 있고,
-//       When: 관리자가 지하철 노선에 "기존의 하행 종점역과 불일치하는 상행역을 가진 새로운 구간"을 등록 요청하면,
-//       Then: 관리자의 구간 추가 요청은 실패한다. */
-//    @DisplayName("지하철 구간 등록에 실패한다. 새로운 구간의 상행역은 등록되어 있는 하행 종점역이어야 한다.")
-//    @Test
-//    public void addSection_fail() {
-//        // given ...
-//
-//        // when & then
-//        ErrorResponse errorResponse = 지하철_구간_등록_실패(신분당선.getId(), SectionRequest.of(강남역.getId(), 삼성역.getId(), 10L));
-//        Assertions.assertEquals(errorResponse.getCode(), SECTION_NOT_MATCH.getCode());
-//
-//    }
-
     /* Given: 지하철 역과 지하철 노선이 등록되어 있고,
         When: 관리자가 지하철 노선에 이미 등록되어 있는 상행역과 하행역을 가진 새로운 구간을 생성 요청하면,
         Then: 관리자의 구간 추가 요청은 실패한다. */
