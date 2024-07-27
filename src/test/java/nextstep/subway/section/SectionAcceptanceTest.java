@@ -1,6 +1,5 @@
 package nextstep.subway.section;
 
-import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
 import nextstep.subway.station.dto.StationResponse;
@@ -62,7 +61,7 @@ public class SectionAcceptanceTest {
 
         // when
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
-        LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
+        var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
 
         // then
         Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
@@ -80,7 +79,7 @@ public class SectionAcceptanceTest {
 
         // when
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 언주역.getId(), 4L));
-        LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
+        var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
 
         // then
         Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(언주역));
@@ -98,7 +97,7 @@ public class SectionAcceptanceTest {
 
         // when
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(언주역.getId(), 강남역.getId(), 4L));
-        LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
+        var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
 
         // then
         Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(언주역));
@@ -116,7 +115,7 @@ public class SectionAcceptanceTest {
 
         // when
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(삼성역.getId(), 언주역.getId(), 4L));
-        LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
+        var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
 
         // then
         Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(언주역));
@@ -133,7 +132,7 @@ public class SectionAcceptanceTest {
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
 
         // when
-        ErrorResponse errorResponse = 지하철_구간_등록_실패(신분당선.getId(), SectionRequest.of(선릉역.getId(), 언주역.getId(), 10L));
+        var errorResponse = 지하철_구간_등록_실패(신분당선.getId(), SectionRequest.of(선릉역.getId(), 언주역.getId(), 10L));
 
         // then
         Assertions.assertEquals(errorResponse.getCode(), SECTION_DISTANCE_LESS_THAN_EXISTING.getCode());
@@ -149,7 +148,7 @@ public class SectionAcceptanceTest {
         // given ...
 
         // when & then
-        ErrorResponse errorResponse = 지하철_구간_등록_실패(신분당선.getId(), SectionRequest.of(강남역.getId(), 선릉역.getId(), 10L));
+        var errorResponse = 지하철_구간_등록_실패(신분당선.getId(), SectionRequest.of(강남역.getId(), 선릉역.getId(), 10L));
         Assertions.assertEquals(errorResponse.getCode(), SECTION_ALREADY_EXIST.getCode());
 
     }
@@ -163,7 +162,7 @@ public class SectionAcceptanceTest {
         // given ...
 
         // when & then
-        ErrorResponse errorResponse = 지하철_구간_등록_실패(신분당선.getId(), SectionRequest.of(언주역.getId(), 논현역.getId(), 2L));
+        var errorResponse = 지하철_구간_등록_실패(신분당선.getId(), SectionRequest.of(언주역.getId(), 논현역.getId(), 2L));
         Assertions.assertEquals(errorResponse.getCode(), SECTION_NOT_FOUND.getCode());
 
     }
@@ -176,14 +175,14 @@ public class SectionAcceptanceTest {
     public void deleteSection_success() {
         // given ...
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
-        LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
+        var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
         Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
 
         // when
         지하철_구간_삭제(구간이_등록된_신분당선.getId(), 삼성역.getId());
 
         // then
-        LineResponse 구간이_삭제된_신분당선 = 지하철_노선_조회(신분당선.getId());
+        var 구간이_삭제된_신분당선 = 지하철_노선_조회(신분당선.getId());
         Assertions.assertFalse(구간이_삭제된_신분당선.getStations().contains(삼성역));
 
     }
@@ -196,11 +195,11 @@ public class SectionAcceptanceTest {
     public void deleteSection_fail() {
         // given ...
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
-        LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
+        var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
         Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
 
         // when & then
-        ErrorResponse errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 선릉역.getId());
+        var errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 선릉역.getId());
         Assertions.assertEquals(errorResponse.getCode(), SECTION_NOT_PERMISSION_NOT_LAST_DESCENDING_STATION.getCode());
 
     }
@@ -212,11 +211,11 @@ public class SectionAcceptanceTest {
     @Test
     public void deleteSection_fail_2() {
         // given ...
-        LineResponse 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
+        var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
         Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(강남역));
 
         // when & then
-        ErrorResponse errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 선릉역.getId());
+        var errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 선릉역.getId());
         Assertions.assertEquals(errorResponse.getCode(), SECTION_NOT_PERMISSION_COUNT_TOO_LOW.getCode());
 
     }

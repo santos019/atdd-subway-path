@@ -72,8 +72,8 @@ public class SectionServiceMockTest {
         when(lineRepository.save(신분당선)).thenReturn(신분당선);
 
         // when
-        SectionRequest 생성_요청 = SectionRequest.of(삼성역.getId(), 강남역.getId(), 5L);
-        SectionResponse 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
+        var 생성_요청 = SectionRequest.of(삼성역.getId(), 강남역.getId(), 5L);
+        var 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
 
         // then
         Assertions.assertEquals(생성_응답.getLineId(), 신분당선.getId());
@@ -96,8 +96,8 @@ public class SectionServiceMockTest {
         sectionService.createSection(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 5L));
 
         // when
-        SectionRequest 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
-        SectionResponse 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
+        var 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
+        var 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
 
         // then
         Assertions.assertEquals(생성_응답.getLineId(), 신분당선.getId());
@@ -117,10 +117,10 @@ public class SectionServiceMockTest {
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
         when(lineRepository.save(신분당선)).thenReturn(신분당선);
 
-        SectionRequest 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
+        var 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
 
         // when
-        SectionResponse 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
+        var 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
 
         // then
         Assertions.assertEquals(생성_응답.getLineId(), 신분당선.getId());
@@ -137,7 +137,7 @@ public class SectionServiceMockTest {
         // given
         when(lineRepository.findById(2L)).thenReturn(Optional.ofNullable(null));
 
-        SectionRequest 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
+        var 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
 
         // when & then
         Assertions.assertThrows(LineNotFoundException.class, () -> sectionService.createSection(2L, 생성_요청))
@@ -152,7 +152,7 @@ public class SectionServiceMockTest {
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(신분당선));
         when(stationRepository.findById(10L)).thenReturn(Optional.ofNullable(null));
 
-        SectionRequest 생성_요청 = SectionRequest.of(10L, 언주역.getId(), 1L);
+        var 생성_요청 = SectionRequest.of(10L, 언주역.getId(), 1L);
 
         // when & then
         Assertions.assertThrows(StationNotFoundException.class, () -> sectionService.createSection(신분당선.getId(), 생성_요청))
@@ -167,7 +167,7 @@ public class SectionServiceMockTest {
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
         when(stationRepository.findById(10L)).thenReturn(Optional.ofNullable(null));
 
-        SectionRequest 생성_요청 = SectionRequest.of(언주역.getId(), 10L, 1L);
+        var 생성_요청 = SectionRequest.of(언주역.getId(), 10L, 1L);
 
         // when & then
         Assertions.assertThrows(StationNotFoundException.class, () -> sectionService.createSection(신분당선.getId(), 생성_요청))

@@ -1,6 +1,5 @@
 package nextstep.subway.station;
 
-import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -36,7 +35,7 @@ public class StationAcceptanceTest {
         지하철_역_등록(역삼역);
 
         // when
-        List<String> stationNames = 지하철_역_전체_조회();
+        var stationNames = 지하철_역_전체_조회();
 
         // then
         assertThat(stationNames.size()).isEqualTo(2);
@@ -47,10 +46,10 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        StationResponse 강남역_생성응답 = 지하철_역_등록(강남역);
-        StationResponse 역삼역_생성응답 = 지하철_역_등록(역삼역);
+        var 강남역_생성응답 = 지하철_역_등록(강남역);
+        var 역삼역_생성응답 = 지하철_역_등록(역삼역);
 
-        List<String> stationNamesAfterCreation = 지하철_역_전체_조회();
+        var stationNamesAfterCreation = 지하철_역_전체_조회();
 
         assertThat(stationNamesAfterCreation.size()).isEqualTo(2);
         assertThat(stationNamesAfterCreation).containsAll(List.of(강남역, 역삼역));
@@ -60,7 +59,7 @@ public class StationAcceptanceTest {
         지하철_역_삭제(역삼역_생성응답.getId());
 
         // then
-        List<String> stationNamesAfterDeletion = 지하철_역_전체_조회();
+        var stationNamesAfterDeletion = 지하철_역_전체_조회();
         assertThat(stationNamesAfterDeletion).doesNotContainAnyElementsOf(List.of(강남역, 역삼역));
     }
 

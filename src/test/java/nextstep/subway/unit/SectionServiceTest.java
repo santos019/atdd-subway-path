@@ -3,7 +3,6 @@ package nextstep.subway.unit;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.section.dto.SectionResponse;
 import nextstep.subway.section.service.SectionService;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.exception.StationNotFoundException;
@@ -58,8 +57,8 @@ public class SectionServiceTest {
     @Rollback
     public void createSection_first() {
         // when
-        SectionRequest 생성_요청 = SectionRequest.of(삼성역.getId(), 강남역.getId(), 5L);
-        SectionResponse 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
+        var 생성_요청 = SectionRequest.of(삼성역.getId(), 강남역.getId(), 5L);
+        var 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
 
         // then
         Assertions.assertEquals(생성_응답.getLineId(), 신분당선.getId());
@@ -76,8 +75,8 @@ public class SectionServiceTest {
         sectionService.createSection(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 5L));
 
         // when
-        SectionRequest 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
-        SectionResponse 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
+        var 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
+        var 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
 
         // then
         Assertions.assertEquals(생성_응답.getLineId(), 신분당선.getId());
@@ -92,10 +91,10 @@ public class SectionServiceTest {
     @DisplayName("새로운 구간을 마지막 구간에 생성한다.")
     public void createSection_last() {
         // given
-        SectionRequest 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
+        var 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
 
         // when
-        SectionResponse 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
+        var 생성_응답 = sectionService.createSection(신분당선.getId(), 생성_요청);
 
         // then
         Assertions.assertEquals(생성_응답.getLineId(), 신분당선.getId());
@@ -110,7 +109,7 @@ public class SectionServiceTest {
     @DisplayName("새로운 구간의 lineId를 찾을 수 없다.")
     public void createSection_fail_lineId_cannot_found() {
         // given
-        SectionRequest 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
+        var 생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
 
         // when & then
         Assertions.assertThrows(LineNotFoundException.class, () -> sectionService.createSection(2L, 생성_요청))
@@ -122,7 +121,7 @@ public class SectionServiceTest {
     @DisplayName("새로운 구간의 upStation을 찾을 수 없다.")
     public void createSection_fail_upStation_cannot_found() {
         // given
-        SectionRequest 생성_요청 = SectionRequest.of(10L, 언주역.getId(), 1L);
+        var 생성_요청 = SectionRequest.of(10L, 언주역.getId(), 1L);
 
         // when & then
         Assertions.assertThrows(StationNotFoundException.class, () -> sectionService.createSection(신분당선.getId(), 생성_요청))
@@ -133,7 +132,7 @@ public class SectionServiceTest {
     @DisplayName("새로운 구간의 downStation을 찾을 수 없다.")
     public void createSection_fail_downStation_cannot_found() {
         // given
-        SectionRequest 생성_요청 = SectionRequest.of(언주역.getId(), 10L, 1L);
+        var 생성_요청 = SectionRequest.of(언주역.getId(), 10L, 1L);
 
         // when & then
         Assertions.assertThrows(StationNotFoundException.class, () -> sectionService.createSection(신분당선.getId(), 생성_요청))

@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LinesResponse;
 import nextstep.subway.line.dto.ModifyLineRequest;
-import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,11 +39,11 @@ public class LineAcceptanceTest {
     @Test
     public void createLine() {
         // given
-        List<StationResponse> 지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역"));
+        var 지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역"));
 
         // when
-        LineResponse 원본_지하철_노선 = new LineResponse("신분당선", "Red", List.of(지하철_역_목록.get(0), 지하철_역_목록.get(1)), 10L);
-        LineResponse 생성된_지하철_노선 = 지하철_노선_생성("신분당선", "Red", 지하철_역_목록.get(0).getId(), 지하철_역_목록.get(1).getId(), 10L);
+        var 원본_지하철_노선 = new LineResponse("신분당선", "Red", List.of(지하철_역_목록.get(0), 지하철_역_목록.get(1)), 10L);
+        var 생성된_지하철_노선 = 지하철_노선_생성("신분당선", "Red", 지하철_역_목록.get(0).getId(), 지하철_역_목록.get(1).getId(), 10L);
         원본_지하철_노선.setId(생성된_지하철_노선.getId());
 
         // then
@@ -58,13 +57,13 @@ public class LineAcceptanceTest {
     @Test
     public void retrieveAllLine() {
         // given
-        List<StationResponse> 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
+        var 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
 
-        LinesResponse 비교할_지하철_노선_목록 = new LinesResponse(List.of((지하철_노선_생성("신분당선", "Red", 생성된_지하철_역_목록.get(0).getId(), 생성된_지하철_역_목록.get(1).getId(), 10L)),
+        var 비교할_지하철_노선_목록 = new LinesResponse(List.of((지하철_노선_생성("신분당선", "Red", 생성된_지하철_역_목록.get(0).getId(), 생성된_지하철_역_목록.get(1).getId(), 10L)),
                 지하철_노선_생성("분당선", "Red", 생성된_지하철_역_목록.get(2).getId(), 생성된_지하철_역_목록.get(3).getId(), 20L)));
 
         // when
-        LinesResponse 지하철_노선_목록 = 지하철_전체_노선_조회();
+        var 지하철_노선_목록 = 지하철_전체_노선_조회();
 
         // then
         assertThat(지하철_노선_목록.getLineResponseList().size()).isEqualTo(2);
@@ -84,16 +83,16 @@ public class LineAcceptanceTest {
     @Test
     public void retrieveLine() {
         // when
-        List<StationResponse> 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
-        LinesResponse 비교할_지하철_노선_목록 = new LinesResponse();
-        LineResponse 지하철_노선_1 = 지하철_노선_생성("신분당선", "Red", 생성된_지하철_역_목록.get(0).getId(), 생성된_지하철_역_목록.get(1).getId(), 10L);
+        var 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
+        var 비교할_지하철_노선_목록 = new LinesResponse();
+        var 지하철_노선_1 = 지하철_노선_생성("신분당선", "Red", 생성된_지하철_역_목록.get(0).getId(), 생성된_지하철_역_목록.get(1).getId(), 10L);
         비교할_지하철_노선_목록.getLineResponseList().add(지하철_노선_1);
 
         // when
-        LineResponse 지하철_노선 = 지하철_노선_조회(지하철_노선_1.getId());
+        var 지하철_노선 = 지하철_노선_조회(지하철_노선_1.getId());
 
         // then
-        LineResponse 비교할_지하철_노선 = 비교할_지하철_노선_목록.getLineResponseList().get(0);
+        var 비교할_지하철_노선 = 비교할_지하철_노선_목록.getLineResponseList().get(0);
         assertThat(비교할_지하철_노선.equals(지하철_노선)).isTrue();
 
     }
@@ -105,8 +104,8 @@ public class LineAcceptanceTest {
     @Test
     public void modifyStation() {
         // given
-        List<StationResponse> 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
-        LineResponse 지하철_노선_1 = 지하철_노선_생성("신분당선", "Red", 생성된_지하철_역_목록.get(0).getId(), 생성된_지하철_역_목록.get(1).getId(), 10L);
+        var 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
+        var 지하철_노선_1 = 지하철_노선_생성("신분당선", "Red", 생성된_지하철_역_목록.get(0).getId(), 생성된_지하철_역_목록.get(1).getId(), 10L);
 
         ModifyLineRequest 지하철_노선_변경_요청 = new ModifyLineRequest("바꾼_신분당선", "Blue");
 
@@ -114,7 +113,7 @@ public class LineAcceptanceTest {
         지하철_노선_수정(지하철_노선_1.getId(), 지하철_노선_변경_요청);
 
         // then
-        LineResponse 변경된_지하철_노선 = 지하철_노선_조회(지하철_노선_1.getId());
+        var 변경된_지하철_노선 = 지하철_노선_조회(지하철_노선_1.getId());
         assertThat(지하철_노선_변경_요청.getName()).isEqualTo(변경된_지하철_노선.getName());
         assertThat(지하철_노선_변경_요청.getColor()).isEqualTo(변경된_지하철_노선.getColor());
 
@@ -127,15 +126,15 @@ public class LineAcceptanceTest {
     @Test
     public void deleteStation() {
         // given
-        List<StationResponse> 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
-        LineResponse 지하철_노선_1 = 지하철_노선_생성("신분당선", "Red", 생성된_지하철_역_목록.get(0).getId(), 생성된_지하철_역_목록.get(1).getId(), 10L);
+        var 생성된_지하철_역_목록 = 여러_개의_지하철_역_생성(List.of("강남역", "역삼역", "선릉역", "논현역"));
+        var 지하철_노선_1 = 지하철_노선_생성("신분당선", "Red", 생성된_지하철_역_목록.get(0).getId(), 생성된_지하철_역_목록.get(1).getId(), 10L);
 
         // when
         지하철_노선_삭제(지하철_노선_1.getId());
 
         // then
-        LinesResponse 지하철_노선_목록 = 지하철_전체_노선_조회();
-        List<LineResponse> 지하철_노선_정보 = 지하철_노선_목록.getLineResponseList();
+        var 지하철_노선_목록 = 지하철_전체_노선_조회();
+        var 지하철_노선_정보 = 지하철_노선_목록.getLineResponseList();
         assertThat(지하철_노선_정보).doesNotContain(지하철_노선_1);
     }
 

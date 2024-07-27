@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class SectionTest {
+
     private Station 역삼역;
     private Station 강남역;
     private Station 선릉역;
@@ -17,7 +18,6 @@ public class SectionTest {
     private Section 역삼역_강남역;
     private Section 강남역_선릉역;
     private Sections 생성된_구간들;
-
 
     @BeforeEach
     public void setup() {
@@ -58,11 +58,11 @@ public class SectionTest {
         생성된_구간들.addSection(강남역_선릉역);
 
         // when
-        Section 중간_구간에_추가할_Section = Section.of(강남역, 선정릉역, 1L);
+        var 중간_구간에_추가할_Section = Section.of(강남역, 선정릉역, 1L);
         생성된_구간들.addSection(중간_구간에_추가할_Section);
 
         // then
-        Section 생성된_Section_조회 = 생성된_구간들.getSectionByUpStationId(강남역.getId());
+        var 생성된_Section_조회 = 생성된_구간들.getSectionByUpStationId(강남역.getId());
         Assertions.assertEquals(중간_구간에_추가할_Section, 생성된_Section_조회);
     }
 
@@ -73,11 +73,11 @@ public class SectionTest {
         생성된_구간들.addSection(역삼역_강남역);
 
         // when
-        Section 마지막_구간에_추가할_Section = Section.of(강남역, 선릉역, 2L);
+        var 마지막_구간에_추가할_Section = Section.of(강남역, 선릉역, 2L);
         생성된_구간들.addSection(마지막_구간에_추가할_Section);
 
         // then
-        Section 생성된_Section_조회 = 생성된_구간들.getSectionByUpStationId(강남역.getId());
+        var 생성된_Section_조회 = 생성된_구간들.getSectionByUpStationId(강남역.getId());
         Assertions.assertEquals(마지막_구간에_추가할_Section, 생성된_Section_조회);
     }
 
@@ -98,7 +98,7 @@ public class SectionTest {
     public void add_section_fail2() {
         // given
         생성된_구간들.addSection(역삼역_강남역);
-        Section 구간에_추가할_Section = Section.of(선정릉역, 선릉역, 2L);
+        var 구간에_추가할_Section = Section.of(선정릉역, 선릉역, 2L);
 
         // when & then
         Assertions.assertThrows(SectionException.class, () -> 생성된_구간들.addSection(구간에_추가할_Section))
@@ -110,7 +110,7 @@ public class SectionTest {
     public void add_section_fail3() {
         // given
         생성된_구간들.addSection(역삼역_강남역);
-        Section 구간에_추가할_Section = Section.of(역삼역, 선릉역, 2L);
+        var 구간에_추가할_Section = Section.of(역삼역, 선릉역, 2L);
 
         // when & then
         Assertions.assertThrows(SectionException.class, () -> 생성된_구간들.addSection(구간에_추가할_Section))

@@ -55,12 +55,13 @@ public class Sections {
         Section originalPrevSNextSection = originalPrevSection.getNextSection();
         originalPrevSection.setNextSection(section);
 
-        if (originalPrevSNextSection != null) {
-            updateSectionData(section, originalPrevSNextSection);
+        if (originalPrevSNextSection == null) {
+            section.setPreviousSection(originalPrevSection);
+            sections.add(section);
             return;
         }
 
-        section.setPreviousSection(originalPrevSection);
+        updateSectionData(section, originalPrevSNextSection);
         sections.add(section);
     }
 
