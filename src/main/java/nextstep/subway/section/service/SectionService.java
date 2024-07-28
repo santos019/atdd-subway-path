@@ -13,6 +13,8 @@ import nextstep.subway.station.service.StationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static nextstep.subway.common.constant.ErrorCode.SECTION_NOT_FOUND;
 import static nextstep.subway.converter.SectionConverter.convertToSectionResponseByLineAndSection;
 
@@ -46,7 +48,7 @@ public class SectionService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Section section = getByDownStationId(stationId);
+        Section section = getADeleteSection(stationId);
 
         Line line = lineService.getLineByIdOrThrow(lineId);
         Sections sections = line.getSections();
@@ -57,10 +59,23 @@ public class SectionService {
         lineService.saveLine(line);
     }
 
+    public Optional<Section> getByUpStationId(Long stationId) {
+        return sectionRepository.findByUpStationId(stationId);
+    }
+
     public Section getByDownStationId(Long stationId) {
         return sectionRepository.findByDownStationId(stationId).orElseThrow(
                 () -> new SectionException(String.valueOf(SECTION_NOT_FOUND))
         );
+    }
+
+    public Section getADeleteSection(Long stationId) {
+        Optional<Section> isNotLastSection = getByUpStationId(stationId);
+        if (isNotLastSection.isEmpty()) {
+            return getByDownStationId(stationId);
+        }
+
+        return isNotLastSection.get();
     }
 
     public void deleteSection(Section section) {

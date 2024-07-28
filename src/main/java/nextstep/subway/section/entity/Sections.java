@@ -78,19 +78,36 @@ public class Sections {
         if (sections.size() <= 1) {
             throw new SectionException(String.valueOf(SECTION_NOT_PERMISSION_COUNT_TOO_LOW));
         }
-        if (!getLastSection().getDownStation().equals(section.getDownStation())) {
-            throw new SectionException(String.valueOf(SECTION_NOT_PERMISSION_NOT_LAST_DESCENDING_STATION));
-        }
 
-        Section previous = section.getPreviousSection();
-        Section next = section.getNextSection();
-        if (previous != null) {
-            previous.setNextSection(next);
+        Section originalSection = getSectionByDownStationId(section.getDownStation().getId());
+        Section nextSection = originalSection.getNextSection();
+        Section prevSection = originalSection.getPreviousSection();
+
+        deleteFirstSection(prevSection, nextSection);
+        deleteMiddleSection(prevSection, nextSection, originalSection);
+
+        sections.remove(originalSection);
+    }
+
+    private void deleteFirstSection(Section prevSection, Section nextSection) {
+        if (prevSection == null) {
+            if (nextSection != null) {
+                nextSection.setPreviousSection(null);
+            }
         }
-        if (next != null) {
-            next.setPreviousSection(previous);
+    }
+
+    private void deleteMiddleSection(Section prevSection, Section nextSection, Section originalSection) {
+        if (prevSection != null) {
+            if (nextSection != null) {
+                prevSection.setNextSection(nextSection);
+                prevSection.setDownStation(nextSection.getUpStation());
+                nextSection.setPreviousSection(prevSection);
+                nextSection.setDistance(originalSection.getDistance() + nextSection.getDistance());
+            } else {
+                prevSection.setNextSection(null);
+            }
         }
-        sections.remove(section);
     }
 
     public Section getFirstSection() {
@@ -125,7 +142,7 @@ public class Sections {
         boolean isUpStationExist = getSectionByUpStation(upStation);
         boolean isDownStationExist = getSectionByDownStation(downStation);
 
-        if(isUpStationExist && isDownStationExist) {
+        if (isUpStationExist && isDownStationExist) {
             throw new SectionException(String.valueOf(SECTION_ALREADY_EXIST));
         }
     }
