@@ -106,7 +106,7 @@ public class Sections {
                 nextSection.setPreviousSection(prevSection);
             } else {
                 prevSection.setNextSection(null);
-            }g
+            }
         }
     }
 
