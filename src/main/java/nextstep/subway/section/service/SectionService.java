@@ -48,9 +48,9 @@ public class SectionService {
 
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
-        Section section = getADeleteSection(stationId);
-
         Line line = lineService.getLineByIdOrThrow(lineId);
+
+        Section section = getADeleteSection(stationId);
         Sections sections = line.getSections();
 
         sections.removeSection(section);
