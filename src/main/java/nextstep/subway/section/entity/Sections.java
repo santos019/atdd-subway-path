@@ -80,11 +80,11 @@ public class Sections {
         }
 
         Section originalSection = getSectionByDownStationId(section.getDownStation().getId());
-        Section nextSection = originalSection.getNextSection();
-        Section prevSection = originalSection.getPreviousSection();
+        Section originalNextSection = originalSection.getNextSection();
+        Section originalPrevSection = originalSection.getPreviousSection();
 
-        deleteFirstSection(prevSection, nextSection);
-        deleteMiddleSection(prevSection, nextSection, originalSection);
+        deleteFirstSection(originalPrevSection, originalNextSection);
+        deleteMiddleSection(originalPrevSection, originalNextSection, originalSection);
 
         sections.remove(originalSection);
     }
@@ -102,8 +102,8 @@ public class Sections {
             if (nextSection != null) {
                 prevSection.setNextSection(nextSection);
                 prevSection.setDownStation(nextSection.getUpStation());
+                prevSection.setDistance(originalSection.getDistance() + prevSection.getDistance());
                 nextSection.setPreviousSection(prevSection);
-                nextSection.setDistance(originalSection.getDistance() + nextSection.getDistance());
             } else {
                 prevSection.setNextSection(null);
             }
