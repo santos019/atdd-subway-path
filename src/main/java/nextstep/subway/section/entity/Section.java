@@ -44,6 +44,21 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Long id, Station upStation, Station downStation, Long distance) {
+        this.id = id;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public static Section of(Long id, Station upStation, Station downStation, Long distance) {
+        if(distance < 1) {
+            throw new SectionException(String.valueOf(SECTION_DISTANCE_TOO_SHORT));
+        }
+
+        return new Section(id, upStation, downStation, distance);
+    }
+
     public static Section of(Station upStation, Station downStation, Long distance) {
         if(distance < 1) {
             throw new SectionException(String.valueOf(SECTION_DISTANCE_TOO_SHORT));
