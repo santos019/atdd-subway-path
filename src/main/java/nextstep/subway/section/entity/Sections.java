@@ -6,6 +6,7 @@ import nextstep.subway.station.entity.Station;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static nextstep.subway.common.constant.ErrorCode.*;
 
@@ -79,14 +80,21 @@ public class Sections {
             throw new SectionException(String.valueOf(SECTION_NOT_PERMISSION_COUNT_TOO_LOW));
         }
 
-        Section originalSection = getSectionByDownStationId(section.getDownStation().getId());
-        Section originalNextSection = originalSection.getNextSection();
-        Section originalPrevSection = originalSection.getPreviousSection();
+        Section originalNextSection = section.getNextSection();
+        Section originalPrevSection = section.getPreviousSection();
 
         deleteFirstSection(originalPrevSection, originalNextSection);
-        deleteMiddleSection(originalPrevSection, originalNextSection, originalSection);
+        deleteMiddleSection(originalPrevSection, originalNextSection, section);
 
-        sections.remove(originalSection);
+        sections.remove(section);
+    }
+
+    public Section getRemoveTargetSection(Long stationId) {
+        Optional<Section> isNotLastSection = getOptionalSectionByUpStationId(stationId);
+        if (isNotLastSection.isEmpty()) {
+            return getSectionByDownStationId(stationId);
+        }
+        return isNotLastSection.get();
     }
 
     private void deleteFirstSection(Section prevSection, Section nextSection) {
@@ -122,6 +130,12 @@ public class Sections {
                 .filter(section -> section.getNextSection() == null)
                 .findFirst()
                 .orElseThrow(() -> new SectionException(String.valueOf(SECTION_LAST_STATION_NOT_FOUND)));
+    }
+
+    public Optional<Section> getOptionalSectionByUpStationId(Long upStationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().getId() == upStationId)
+                .findFirst();
     }
 
     public Section getSectionByUpStationId(Long upStationId) {

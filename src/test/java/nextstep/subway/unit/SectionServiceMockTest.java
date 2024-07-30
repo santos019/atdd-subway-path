@@ -180,7 +180,6 @@ public class SectionServiceMockTest {
     public void delete_section_first_section() {
         // given
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(신분당선));
-        when(sectionRepository.findByUpStationId(1L)).thenReturn(Optional.ofNullable(강남역_선릉역_구간));
         when(stationRepository.findById(2L)).thenReturn(Optional.ofNullable(선릉역));
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
         when(lineRepository.save(신분당선)).thenReturn(신분당선);
@@ -197,7 +196,6 @@ public class SectionServiceMockTest {
     public void delete_section_middle_section() {
         // given
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(신분당선));
-        when(sectionRepository.findByUpStationId(2L)).thenReturn(Optional.ofNullable(Section.of(선릉역, 언주역, 1L)));
         when(stationRepository.findById(2L)).thenReturn(Optional.ofNullable(선릉역));
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
         when(stationRepository.findById(5L)).thenReturn(Optional.ofNullable(논현역));
@@ -217,7 +215,6 @@ public class SectionServiceMockTest {
     public void delete_section_last_section() {
         // given
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(신분당선));
-        when(sectionRepository.findByUpStationId(4L)).thenReturn(Optional.ofNullable(Section.of(선릉역, 언주역, 2L)));
         when(stationRepository.findById(2L)).thenReturn(Optional.ofNullable(선릉역));
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
         when(lineRepository.save(신분당선)).thenReturn(신분당선);
@@ -236,8 +233,6 @@ public class SectionServiceMockTest {
         when(lineRepository.findById(1L)).thenReturn(Optional.ofNullable(신분당선));
         when(stationRepository.findById(2L)).thenReturn(Optional.ofNullable(선릉역));
         when(stationRepository.findById(4L)).thenReturn(Optional.ofNullable(언주역));
-        when(sectionRepository.findByUpStationId(5L)).thenReturn(Optional.ofNullable(null));
-        when(sectionRepository.findByDownStationId(5L)).thenReturn(Optional.ofNullable(null));
         when(lineRepository.save(신분당선)).thenReturn(신분당선);
 
         var 선릉역_언주역_구간_생성_요청 = SectionRequest.of(선릉역.getId(), 언주역.getId(), 1L);
