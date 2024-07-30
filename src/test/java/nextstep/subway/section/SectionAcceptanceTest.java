@@ -167,26 +167,6 @@ public class SectionAcceptanceTest {
 
     }
 
-//    /* Given: 지하철 역과 지하철 노선이 등록되어 있고,
-//       When: 관리자가 지하철 노선의 마지막 구간을 삭제 요청하면,
-//       Then: 관리자가 삭제 요청한 구간이 삭제된다. */
-//    @DisplayName("지하철 구간을 삭제한다.")
-//    @Test
-//    public void deleteSection_success() {
-//        // given ...
-//        지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
-//        var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
-//        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
-//
-//        // when
-//        지하철_구간_삭제(구간이_등록된_신분당선.getId(), 삼성역.getId());
-//
-//        // then
-//        var 구간이_삭제된_신분당선 = 지하철_노선_조회(신분당선.getId());
-//        Assertions.assertFalse(구간이_삭제된_신분당선.getStations().contains(삼성역));
-//
-//    }
-
     /* Given: 지하철 역과 지하철 노선이 등록되어 있고,
        When: 관리자가 지하철 노선의 상행 종점역 구간을 삭제 요청하면,
        Then: 관리자가 삭제 요청한 구간이 삭제된다. */
