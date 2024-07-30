@@ -51,7 +51,7 @@ public class SectionServiceMockTest {
 
     @BeforeEach
     public void setup() {
-        stationService = new StationService(stationRepository);
+        stationService = new StationService(stationRepository, lineService);
         lineService = new LineService(lineRepository, stationService);
         sectionService = new SectionService(sectionRepository, stationService, lineService);
         강남역 = Station.of(1L, "강남역");

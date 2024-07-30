@@ -1,5 +1,6 @@
 package nextstep.subway.handler;
 
+import nextstep.subway.station.exception.StationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -21,6 +22,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(StationNotFoundException.class)
     public ResponseEntity<ErrorResponse> StationNotFoundExceptionHandler(StationNotFoundException e) {
+        ErrorResponse errorResponse = new ErrorResponse(ErrorCode.getCollectedErrorResponse(e.getMessage()));
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(StationException.class)
+    public ResponseEntity<ErrorResponse> StationExceptionHandler(StationException e) {
         ErrorResponse errorResponse = new ErrorResponse(ErrorCode.getCollectedErrorResponse(e.getMessage()));
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
