@@ -12,11 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.util.List;
+
 import static nextstep.subway.common.constant.ErrorCode.*;
 import static nextstep.subway.util.LineStep.지하철_노선_생성;
 import static nextstep.subway.util.LineStep.지하철_노선_조회;
 import static nextstep.subway.util.SectionStep.*;
 import static nextstep.subway.util.StationStep.지하철_역_등록;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -64,7 +67,7 @@ public class SectionAcceptanceTest {
         var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
 
         // then
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
+        assertThat(구간이_등록된_신분당선.getStations()).containsExactlyInAnyOrder(강남역, 선릉역, 삼성역);
 
     }
 
@@ -82,7 +85,7 @@ public class SectionAcceptanceTest {
         var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
 
         // then
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(언주역));
+        assertThat(구간이_등록된_신분당선.getStations()).containsExactlyInAnyOrder(강남역, 선릉역, 삼성역, 언주역);
 
     }
 
@@ -100,7 +103,7 @@ public class SectionAcceptanceTest {
         var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
 
         // then
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(언주역));
+        assertThat(구간이_등록된_신분당선.getStations()).containsExactlyInAnyOrder(강남역, 선릉역, 삼성역, 언주역);
 
     }
 
@@ -118,7 +121,7 @@ public class SectionAcceptanceTest {
         var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
 
         // then
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(언주역));
+        assertThat(구간이_등록된_신분당선.getStations()).containsExactlyInAnyOrder(강남역, 선릉역, 삼성역, 언주역);
 
     }
 
@@ -176,7 +179,7 @@ public class SectionAcceptanceTest {
         // given ...
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
         var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
+        assertThat(구간이_등록된_신분당선.getStations()).containsExactlyInAnyOrder(강남역, 선릉역, 삼성역);
 
         // when
         지하철_구간_삭제(구간이_등록된_신분당선.getId(), 강남역.getId());
@@ -197,8 +200,7 @@ public class SectionAcceptanceTest {
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(삼성역.getId(), 언주역.getId(), 10L));
         var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(언주역));
+        assertThat(구간이_등록된_신분당선.getStations()).containsExactlyInAnyOrder(강남역, 선릉역, 삼성역, 언주역);
 
         // when
         지하철_구간_삭제(구간이_등록된_신분당선.getId(), 선릉역.getId());
@@ -218,7 +220,7 @@ public class SectionAcceptanceTest {
         // given ...
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
         var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
+        assertThat(구간이_등록된_신분당선.getStations()).containsExactlyInAnyOrder(강남역, 선릉역, 삼성역);
 
         // when
         지하철_구간_삭제(구간이_등록된_신분당선.getId(), 삼성역.getId());
@@ -238,7 +240,7 @@ public class SectionAcceptanceTest {
         // given ...
         지하철_구간_등록(신분당선.getId(), SectionRequest.of(선릉역.getId(), 삼성역.getId(), 10L));
         var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(삼성역));
+        assertThat(구간이_등록된_신분당선.getStations()).containsExactlyInAnyOrder(강남역, 선릉역, 삼성역);
 
         // when & then
         var errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 언주역.getId());
@@ -254,7 +256,7 @@ public class SectionAcceptanceTest {
     public void deleteSection_fail_2() {
         // given ...
         var 구간이_등록된_신분당선 = 지하철_노선_조회(신분당선.getId());
-        Assertions.assertTrue(구간이_등록된_신분당선.getStations().contains(강남역));
+        assertThat(구간이_등록된_신분당선.getStations()).containsExactlyInAnyOrder(강남역, 선릉역);
 
         // when & then
         var errorResponse = 지하철_구간_삭제_실패(구간이_등록된_신분당선.getId(), 선릉역.getId());
