@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.section.acceptance;
 
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;

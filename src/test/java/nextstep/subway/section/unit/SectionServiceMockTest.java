@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.section.unit;
 
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.exception.LineNotFoundException;

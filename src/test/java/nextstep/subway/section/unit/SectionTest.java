@@ -1,4 +1,4 @@
-package nextstep.subway.unit;
+package nextstep.subway.section.unit;
 
 import nextstep.subway.section.entity.Section;
 import nextstep.subway.section.entity.Sections;
