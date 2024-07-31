@@ -1,38 +1,142 @@
 package nextstep.subway.path.unit;
 
+import nextstep.subway.line.entity.Line;
 import nextstep.subway.path.dto.Path;
+import nextstep.subway.path.exception.PathException;
+import nextstep.subway.section.entity.Section;
+import nextstep.subway.section.entity.Sections;
+import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.entity.Station;
 import org.jgrapht.GraphPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static nextstep.subway.common.constant.ErrorCode.PATH_NOT_FOUND;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PathTest {
 
+    Station 강남역;
+    Station 역삼역;
+    Section 강남역_역삼역_구간;
+    Sections 구간들;
+    Line 신분당선;
+    List<Line> lineList;
+    double pathWeight = 10.0;
+    Path path;
+    GraphPath<Long, DefaultWeightedEdge> mockGraphPath;
+
+
+    @BeforeEach
+    public void setup() {
+        강남역 = new Station(1L, "강남역");
+        역삼역 = new Station(2L, "역삼역");
+
+        mockGraphPath = mock(GraphPath.class);
+        when(mockGraphPath.getVertexList()).thenReturn(List.of(강남역.getId(), 역삼역.getId()));
+        when(mockGraphPath.getWeight()).thenReturn(pathWeight);
+
+        강남역_역삼역_구간 = new Section(강남역, 역삼역, 10L);
+        구간들 = new Sections(Collections.singletonList(강남역_역삼역_구간));
+        신분당선 = new Line(1L, "신분당선", "red", 15L, 구간들);
+        lineList = Collections.singletonList(신분당선);
+        path = new Path(mockGraphPath);
+
+    }
+
     @DisplayName("getVertexList와 getWeight의 정상 동작을 확인한다.")
     @Test
-    public void getVertexList_getWeight () {
-        // given
-        List<Long> vertexList = List.of(1L, 2L, 3L);
-        double weight = 10.5;
+    public void getVertexList_getWeight() {
+        // then
+        assertAll(
+                () -> assertEquals(List.of(강남역.getId(), 역삼역.getId()), path.getVertexList()),
+                () -> assertEquals(pathWeight, path.getWeight())
+        );
+    }
 
-        GraphPath<Long, DefaultWeightedEdge> graphPath = Mockito.mock(GraphPath.class);
-        when(graphPath.getVertexList()).thenReturn(vertexList);
-        when(graphPath.getWeight()).thenReturn(weight);
-
+    @DisplayName("[createPathResponse] pathResponse를 생성한다.")
+    @Test
+    void createPathResponse_success() {
         // when
-        Path path = new Path(graphPath);
+        var pathResponse = path.createPathResponse(path, lineList);
 
         // then
         assertAll(
-                () -> assertEquals(vertexList, path.getVertexList()),
-                () -> assertEquals(weight, path.getWeight())
+                () -> assertNotNull(pathResponse),
+                () -> assertEquals(pathWeight, pathResponse.getDistance()),
+                () -> assertEquals(List.of(
+                        new StationResponse(강남역.getId(), 강남역.getName()),
+                        new StationResponse(역삼역.getId(), 역삼역.getName())
+                ), pathResponse.getStationResponseList())
         );
+    }
+
+    @DisplayName("[createPathResponse] path의 vertexList가 비어 있으면 예외가 발생한다.")
+    @Test
+    void createPathResponse_fail1() {
+        // given
+        when(mockGraphPath.getVertexList()).thenReturn(List.of());
+        var path = new Path(mockGraphPath);
+
+        // when & then
+        assertThrows(PathException.class, () -> path.createPathResponse(path, lineList))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[createPathResponse] lineList가 비어 있으면 예외가 발생한다.")
+    @Test
+    void createPathResponse_fail2() {
+        // when & then
+        assertThrows(PathException.class, () -> path.createPathResponse(path, List.of()))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[getStation] stationId에 해당하는 Station을 찾는다. upStation으로 찾는다.")
+    @Test
+    void getStation_success() {
+        // when
+        var 찾은_역 = path.getStation(lineList, 강남역.getId());
+
+        // then
+        assertAll(
+                () -> assertEquals(찾은_역, 강남역)
+        );
+    }
+
+    @DisplayName("[getStation] stationId에 해당하는 Station을 찾는다. downStation으로 찾는다.")
+    @Test
+    void getStation_success2() {
+        // when
+        var 찾은_역 = path.getStation(lineList, 역삼역.getId());
+
+        // then
+        assertAll(
+                () -> assertEquals(찾은_역, 역삼역)
+        );
+    }
+
+    @DisplayName("[getStation] stationId에 해당하는 Station을 찾지 못하면 예외가 발생한다.")
+    @Test
+    void getStation_fail1() {
+        // when & then
+        assertThrows(PathException.class, () -> path.getStation(lineList, 3L))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[getStation] lineList가 비어 있으면 예외가 발생한다.")
+    @Test
+    void getStation_fail2() {
+        var path = new Path(mockGraphPath);
+
+        // when & then
+        assertThrows(PathException.class, () -> path.getStation(List.of(), 3L))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
     }
 }

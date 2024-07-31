@@ -9,6 +9,7 @@ import org.jgrapht.graph.WeightedMultigraph;
 
 import java.util.List;
 
+import static nextstep.subway.common.constant.ErrorCode.PATH_DUPLICATE_STATION;
 import static nextstep.subway.common.constant.ErrorCode.PATH_NOT_FOUND;
 
 public class GraphModel {
@@ -78,7 +79,7 @@ public class GraphModel {
 
     public void validateDuplicate (Long source, Long target) {
         if(source.equals(target)) {
-            throw new PathException(String.valueOf(PATH_NOT_FOUND));
+            throw new PathException(String.valueOf(PATH_DUPLICATE_STATION));
         }
     }
 }

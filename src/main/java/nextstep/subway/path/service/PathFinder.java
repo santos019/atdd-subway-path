@@ -35,7 +35,7 @@ public class PathFinder {
         List<Line> lineList = lineService.getAllLines();
         GraphModel graphModel = new GraphModel(source, target);
         Path path = graphModel.findPath(lineList);
-        return createPathResponse(path);
+        return path.createPathResponse(path, lineList);
     }
 
     private void validateStationExist(Long source, Long target) {

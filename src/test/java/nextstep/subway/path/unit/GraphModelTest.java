@@ -10,6 +10,7 @@ import nextstep.subway.station.entity.Station;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,13 +22,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GraphModelTest {
 
+    Station 강남역;
+    Station 역삼역;
+
+    @BeforeEach
+    public void setup() {
+        강남역 = new Station(1L, "강남역");
+        역삼역 = new Station(2L, "역삼역");
+    }
+
     @DisplayName("[createGraphModel] graph를 생성한다.")
     @Test
     void createGraphModel_success() {
         // given
-        Station stationA = new Station(1L, "Station A");
-        Station stationB = new Station(2L, "Station B");
-        Section section = new Section(stationA, stationB, 5L);
+        Section section = new Section(강남역, 역삼역, 5L);
         Sections sections = new Sections(List.of(section));
         Line line = new Line(1L, "신분당선", "red", 15L, sections);
         GraphModel graphModel = new GraphModel(1L, 2L);
@@ -37,14 +45,14 @@ public class GraphModelTest {
 
         // then
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = graphModel.getGraph();
-        DefaultWeightedEdge edge = graph.getEdge(stationA.getId(), stationB.getId());
+        DefaultWeightedEdge edge = graph.getEdge(강남역.getId(), 역삼역.getId());
 
         assertAll(
-                () -> assertTrue(graph.containsVertex(stationA.getId())),
-                () -> assertTrue(graph.containsVertex(stationB.getId())),
-                () -> assertTrue(graph.containsEdge(stationA.getId(), stationB.getId())),
+                () -> assertTrue(graph.containsVertex(강남역.getId())),
+                () -> assertTrue(graph.containsVertex(역삼역.getId())),
+                () -> assertTrue(graph.containsEdge(강남역.getId(), 역삼역.getId())),
                 () -> assertNotNull(edge),
-                () -> assertEquals(graph.getEdgeWeight(edge),5.0)
+                () -> assertEquals(graph.getEdgeWeight(edge), 5.0)
         );
     }
 
@@ -52,8 +60,7 @@ public class GraphModelTest {
     @Test
     void createGraphModel_fail() {
         // given
-        Station stationA = new Station(1L, "Station A");
-        Section section = new Section(stationA, stationA, 5L);
+        Section section = new Section(강남역, 강남역, 5L);
         Sections sections = new Sections(List.of(section));
         Line line = new Line(1L, "신분당선", "red", 15L, sections);
         GraphModel graphModel = new GraphModel(1L, 2L);
@@ -91,10 +98,7 @@ public class GraphModelTest {
     @Test
     void findShortestPath_success() {
         // given
-        Station stationA = new Station(1L, "Station A");
-        Station stationB = new Station(2L, "Station B");
-
-        Section section = new Section(stationA, stationB, 5L);
+        Section section = new Section(강남역, 역삼역, 5L);
         Sections sections = new Sections(List.of(section));
         Line line = new Line(1L, "신분당선", "red", 15L, sections);
         GraphModel graphModel = new GraphModel(1L, 2L);
@@ -107,7 +111,7 @@ public class GraphModelTest {
         assertAll(
                 () -> assertNotNull(path),
                 () -> assertEquals(5.0, path.getWeight()),
-                () -> assertEquals(List.of(1L, 2L), path.getVertexList())
+                () -> assertEquals(List.of(강남역.getId(), 역삼역.getId()), path.getVertexList())
         );
     }
 
@@ -115,10 +119,7 @@ public class GraphModelTest {
     @Test
     public void addSectionsToGraph_success() {
         // given
-        Station stationA = new Station(1L, "Station A");
-        Station stationB = new Station(2L, "Station B");
-
-        Section section = new Section(stationA, stationB, 5L);
+        Section section = new Section(강남역, 역삼역, 5L);
         Sections sections = new Sections(List.of(section));
         Line line = new Line(1L, "신분당선", "red", 15L, sections);
         GraphModel graphModel = new GraphModel(1L, 2L);
@@ -128,14 +129,14 @@ public class GraphModelTest {
 
         // then
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = graphModel.getGraph();
-        DefaultWeightedEdge edge = graph.getEdge(stationA.getId(), stationB.getId());
+        DefaultWeightedEdge edge = graph.getEdge(강남역.getId(), 역삼역.getId());
 
         assertAll(
-                () -> assertTrue(graph.containsVertex(stationA.getId())),
-                () -> assertTrue(graph.containsVertex(stationB.getId())),
+                () -> assertTrue(graph.containsVertex(강남역.getId())),
+                () -> assertTrue(graph.containsVertex(역삼역.getId())),
                 () -> assertNotNull(edge),
                 () -> assertEquals(graph.getEdgeWeight(edge), 5.0),
-                () -> assertTrue(graph.containsEdge(stationA.getId(), stationB.getId()))
+                () -> assertTrue(graph.containsEdge(강남역.getId(), 역삼역.getId()))
         );
     }
 
@@ -156,10 +157,7 @@ public class GraphModelTest {
     @Test
     public void addSectionsToGraph_fail2() {
         // given
-        Station stationA = new Station(1L, "Station A");
-        Station stationB = new Station(1L, "Station B");
-
-        Section section = new Section(stationA, stationB, 5L);
+        Section section = new Section(강남역, 강남역, 5L);
         Sections sections = new Sections(List.of(section));
         Line line = new Line(1L, "신분당선", "red", 15L, sections);
         GraphModel graphModel = new GraphModel(1L, 2L);
@@ -175,15 +173,15 @@ public class GraphModelTest {
         // given
         GraphModel graphModel = new GraphModel(1L, 2L);
 
-        graphModel.addEdge(3L, 4L, 20.0);
+        graphModel.addEdge(강남역.getId(), 역삼역.getId(), 20.0);
 
         // then
         WeightedMultigraph<Long, DefaultWeightedEdge> graph = graphModel.getGraph();
-        DefaultWeightedEdge edge = graph.getEdge(3L, 4L);
+        DefaultWeightedEdge edge = graph.getEdge(강남역.getId(), 역삼역.getId());
 
         assertAll(
-                () -> assertTrue(graph.containsVertex(3L)),
-                () -> assertTrue(graph.containsVertex(4L)),
+                () -> assertTrue(graph.containsVertex(강남역.getId())),
+                () -> assertTrue(graph.containsVertex(역삼역.getId())),
                 () -> assertTrue(edge != null),
                 () -> assertTrue(graph.getEdgeWeight(edge) == 20.0)
         );
