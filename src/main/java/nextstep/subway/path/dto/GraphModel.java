@@ -17,6 +17,7 @@ public class GraphModel {
     private Long target;
 
     public GraphModel(Long source, Long target) {
+        validateDuplicate(source, target);
         this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         this.source = source;
         this.target = target;
@@ -24,10 +25,14 @@ public class GraphModel {
 
     public Path findPath(List<Line> lineList) {
         createGraphModel(lineList);
-        return findShortestPath(source, target);
+        return findShortestPath();
     }
 
     public void createGraphModel(List<Line> lineList) {
+        if(lineList.isEmpty()) {
+            throw new PathException(String.valueOf(PATH_NOT_FOUND));
+        }
+
         for (Line line : lineList) {
             addSectionsToGraph(line);
         }
@@ -36,14 +41,19 @@ public class GraphModel {
         containsVertex(target);
     }
 
-    public Path findShortestPath(Long source, Long target) {
+    public Path findShortestPath() {
+        validateDuplicate(source, target);
         DijkstraShortestPath<Long, DefaultWeightedEdge> shortestPath =
                 new DijkstraShortestPath<>(graph);
         return new Path(shortestPath.getPath(source, target));
     }
 
-    private void addSectionsToGraph(Line line) {
+    public void addSectionsToGraph(Line line) {
         List<Section> sectionList = line.getSections().getSections();
+
+        if (sectionList.isEmpty()) {
+            throw new PathException(String.valueOf(PATH_NOT_FOUND));
+        }
         for (Section section : sectionList) {
             addEdge(section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
         }
@@ -59,9 +69,16 @@ public class GraphModel {
         }
     }
 
-    public void addEdge(Long source, Long target, double weight) {
-        graph.addVertex(source);
-        graph.addVertex(target);
-        graph.setEdgeWeight(graph.addEdge(source, target), weight);
+    public void addEdge(Long newSource, Long newTarget, double weight) {
+        validateDuplicate(newSource, newTarget);
+        graph.addVertex(newSource);
+        graph.addVertex(newTarget);
+        graph.setEdgeWeight(graph.addEdge(newSource, newTarget), weight);
+    }
+
+    public void validateDuplicate (Long source, Long target) {
+        if(source.equals(target)) {
+            throw new PathException(String.valueOf(PATH_NOT_FOUND));
+        }
     }
 }

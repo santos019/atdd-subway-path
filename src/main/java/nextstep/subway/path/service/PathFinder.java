@@ -31,18 +31,11 @@ public class PathFinder {
 
     @Transactional(readOnly = true)
     public PathResponse retrieveStationPath(Long source, Long target) {
-        validateDistinctSourceAndTarget(source, target);
         validateStationExist(source, target);
         List<Line> lineList = lineService.getAllLines();
         GraphModel graphModel = new GraphModel(source, target);
         Path path = graphModel.findPath(lineList);
         return createPathResponse(path);
-    }
-
-    private void validateDistinctSourceAndTarget(Long source, Long target) {
-        if (source.equals(target)) {
-            throw new StationException(String.valueOf(PATH_DUPLICATE_STATION));
-        }
     }
 
     private void validateStationExist(Long source, Long target) {

@@ -1,93 +1,227 @@
-//package nextstep.subway.path.unit;
-//
-//import nextstep.subway.path.dto.GraphModel;
-//import nextstep.subway.path.exception.PathException;
-//import org.jgrapht.graph.DefaultWeightedEdge;
-//import org.jgrapht.graph.WeightedMultigraph;
-//import org.junit.jupiter.api.Assertions;
-//import org.junit.jupiter.api.DisplayName;
-//import org.junit.jupiter.api.Test;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//public class GraphModelTest {
-//
-//    @DisplayName("GraphModel에 Edge를 추가한다.")
-//    @Test
-//    public void addEdge() {
-//        // given
-//        Long source = 1L;
-//        Long target = 2L;
-//        double weight = 10.0;
-//
-//        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-//        GraphModel graphModel = new GraphModel(graph);
-//
-//        // when
-//        graphModel.addEdge(source, target, weight);
-//
-//        // then
-//        assertTrue(graph.containsEdge(source, target));
-//        assertEquals(weight, graph.getEdgeWeight(graph.getEdge(source, target)));
-//    }
-//
-//    @DisplayName("GraphMode에 중복된 Edge를 추가할 수 없다. 최초로 추가된 Edge값을 가진다.")
-//    @Test
-//    public void addEdge_fail() {
-//        // given
-//        Long source = 1L;
-//        Long target = 2L;
-//        double weight = 10.0;
-//
-//        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-//        GraphModel graphModel = new GraphModel(graph);
-//
-//        // when
-//        graphModel.addEdge(source, target, weight);
-//        graphModel.addEdge(source, target, 20.0);
-//
-//        // then
-//        assertTrue(graph.containsEdge(source, target));
-//        assertEquals(weight, graph.getEdgeWeight(graph.getEdge(source, target)));
-//    }
-//
-//    @DisplayName("GraphModel에 vertexId가 Vertex로 포함되어 있는지 확인한다.")
-//    @Test
-//    public void containsVertex_success() {
-//        // given
-//        Long source = 1L;
-//        Long target = 2L;
-//        double weight = 10.0;
-//
-//        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-//        GraphModel graphModel = new GraphModel(graph);
-//
-//        graphModel.addEdge(source, target, weight);
-//
-//        // when & then
-////        assertAll(
-////                () -> assertDoesNotThrow(() -> graphModel.containsVertex(source)),
-////                () -> assertDoesNotThrow(() -> graphModel.containsVertex(target))
-////        );
-//    }
-//
-//    @DisplayName("GraphModel에 vertexId가 Vertex로 포함되어 있지 않으면 PATH_NOT_FOUND 예외가 발생한다.")
-//    @Test
-//    public void containsVertex_fail() {
-//        // given
-//        Long source = 1L;
-//        Long target = 2L;
-//        double weight = 10.0;
-//
-//        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
-//        GraphModel graphModel = new GraphModel(graph);
-//
-//        graphModel.addEdge(source, target, weight);
-//
-//        // when & then
-////        Assertions.assertAll(
-////                () -> assertDoesNotThrow(() -> graphModel.containsVertex(source)),
-////                () -> assertThrows(PathException.class, () -> graphModel.containsVertex(3L))
-////        );
-//    }
-//}
+package nextstep.subway.path.unit;
+
+import nextstep.subway.line.entity.Line;
+import nextstep.subway.path.dto.GraphModel;
+import nextstep.subway.path.dto.Path;
+import nextstep.subway.path.exception.PathException;
+import nextstep.subway.section.entity.Section;
+import nextstep.subway.section.entity.Sections;
+import nextstep.subway.station.entity.Station;
+import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.WeightedMultigraph;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.List;
+
+import static nextstep.subway.common.constant.ErrorCode.PATH_NOT_FOUND;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class GraphModelTest {
+
+    @DisplayName("[createGraphModel] graph를 생성한다.")
+    @Test
+    void createGraphModel_success() {
+        // given
+        Station stationA = new Station(1L, "Station A");
+        Station stationB = new Station(2L, "Station B");
+        Section section = new Section(stationA, stationB, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line line = new Line(1L, "신분당선", "red", 15L, sections);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when
+        graphModel.createGraphModel(Collections.singletonList(line));
+
+        // then
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = graphModel.getGraph();
+        DefaultWeightedEdge edge = graph.getEdge(stationA.getId(), stationB.getId());
+
+        assertAll(
+                () -> assertTrue(graph.containsVertex(stationA.getId())),
+                () -> assertTrue(graph.containsVertex(stationB.getId())),
+                () -> assertTrue(graph.containsEdge(stationA.getId(), stationB.getId())),
+                () -> assertNotNull(edge),
+                () -> assertEquals(graph.getEdgeWeight(edge),5.0)
+        );
+    }
+
+    @DisplayName("[createGraphModel] 출발역과 도착역이 같은 section을 가진 linelist는 예외를 발생시킨다.")
+    @Test
+    void createGraphModel_fail() {
+        // given
+        Station stationA = new Station(1L, "Station A");
+        Section section = new Section(stationA, stationA, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line line = new Line(1L, "신분당선", "red", 15L, sections);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when & then
+        Assertions.assertThrows(PathException.class, () -> graphModel.createGraphModel(Collections.singletonList(line)))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[createGraphModel] Linelist가 비어있으면 예외가 발생한다.")
+    @Test
+    void createGraphModel_fail2() {
+        // given
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when & then
+        Assertions.assertThrows(PathException.class, () -> graphModel.createGraphModel(List.of()))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[createGraphModel] Linelist의 Sections가 비어있으면 예외가 발생한다.")
+    @Test
+    void createGraphModel_fail3() {
+        // given
+        Sections sections = new Sections(List.of());
+        Line line = new Line(1L, "신분당선", "red", 15L, sections);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when & then
+        Assertions.assertThrows(PathException.class, () -> graphModel.createGraphModel(Collections.singletonList(line)))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[findShortestPath] Path를 생성한다.")
+    @Test
+    void findShortestPath_success() {
+        // given
+        Station stationA = new Station(1L, "Station A");
+        Station stationB = new Station(2L, "Station B");
+
+        Section section = new Section(stationA, stationB, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line line = new Line(1L, "신분당선", "red", 15L, sections);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+        graphModel.createGraphModel(Collections.singletonList(line));
+
+        // when
+        Path path = graphModel.findShortestPath();
+
+        // then
+        assertAll(
+                () -> assertNotNull(path),
+                () -> assertEquals(5.0, path.getWeight()),
+                () -> assertEquals(List.of(1L, 2L), path.getVertexList())
+        );
+    }
+
+    @DisplayName("[addSectionsToGraph] line을 graph의 Edge에 추가한다.")
+    @Test
+    public void addSectionsToGraph_success() {
+        // given
+        Station stationA = new Station(1L, "Station A");
+        Station stationB = new Station(2L, "Station B");
+
+        Section section = new Section(stationA, stationB, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line line = new Line(1L, "신분당선", "red", 15L, sections);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when
+        graphModel.addSectionsToGraph(line);
+
+        // then
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = graphModel.getGraph();
+        DefaultWeightedEdge edge = graph.getEdge(stationA.getId(), stationB.getId());
+
+        assertAll(
+                () -> assertTrue(graph.containsVertex(stationA.getId())),
+                () -> assertTrue(graph.containsVertex(stationB.getId())),
+                () -> assertNotNull(edge),
+                () -> assertEquals(graph.getEdgeWeight(edge), 5.0),
+                () -> assertTrue(graph.containsEdge(stationA.getId(), stationB.getId()))
+        );
+    }
+
+    @DisplayName("[addSectionsToGraph] Sections가 비어 있는 Line을 graph의 Edge에 추가하면 예외가 발생한다.")
+    @Test
+    public void addSectionsToGraph_fail() {
+        // given
+        Sections sections = new Sections(List.of());
+        Line line = new Line(1L, "신분당선", "red", 15L, sections);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when & then
+        Assertions.assertThrows(PathException.class, () -> graphModel.addSectionsToGraph(line))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[addSectionsToGraph] 동일한 StationId를 가지고 있는 Section을 graph의 Edge에 추가하면 예외가 발생한다.")
+    @Test
+    public void addSectionsToGraph_fail2() {
+        // given
+        Station stationA = new Station(1L, "Station A");
+        Station stationB = new Station(1L, "Station B");
+
+        Section section = new Section(stationA, stationB, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line line = new Line(1L, "신분당선", "red", 15L, sections);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when & then
+        Assertions.assertThrows(PathException.class, () -> graphModel.addSectionsToGraph(line))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[addEdge] 새로운 Edge를 생성한다.")
+    @Test
+    public void addEdge_success() {
+        // given
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        graphModel.addEdge(3L, 4L, 20.0);
+
+        // then
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = graphModel.getGraph();
+        DefaultWeightedEdge edge = graph.getEdge(3L, 4L);
+
+        assertAll(
+                () -> assertTrue(graph.containsVertex(3L)),
+                () -> assertTrue(graph.containsVertex(4L)),
+                () -> assertTrue(edge != null),
+                () -> assertTrue(graph.getEdgeWeight(edge) == 20.0)
+        );
+    }
+
+    @DisplayName("[addEdge] 동일한 source와 target으로는 Edge를 생성할 수 없다.")
+    @Test
+    public void addEdge_fail() {
+        // given
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // then
+        Assertions.assertThrows(PathException.class, () -> graphModel.addEdge(4L, 4L, 20.0))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[validateDuplicate] 동일하지 않는 source와 target을 인자로 주면 예외가 발생하지 않는다.")
+    @Test
+    public void validateDuplicate_success() {
+        // give
+        Long source = 1L;
+        Long target = 2L;
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when & then
+        Assertions.assertDoesNotThrow(() -> graphModel.validateDuplicate(source, target));
+    }
+
+    @DisplayName("[validateDuplicate] 동일한 source와 target을 인자로 주면 예외가 발생한다.")
+    @Test
+    public void validateDuplicate_fail() {
+        // give
+        Long source = 1L;
+        Long target = 1L;
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when & then
+        Assertions.assertThrows(PathException.class, () -> graphModel.validateDuplicate(source, target))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+}
