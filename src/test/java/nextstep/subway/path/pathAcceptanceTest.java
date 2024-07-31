@@ -92,11 +92,12 @@ public class pathAcceptanceTest {
        When : 관리자가 출발역의 ID와 도착역의 ID가 동일한 paths를 요청하면,
        Then : 관리자는 경로의 구간 조회에 실패한다. */
     @DisplayName("경로 조회를 실패한다. 출발역과 도착역은 동일할 수 없다.")
+    @Test
     public void paths_find_fail() {
         // when
         var 경로_조회_결과 = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/paths?source=" + 교대역 + "&target=" + 교대역)
+                .when().get("/paths?source=" + 교대역.getId() + "&target=" + 교대역.getId())
                 .then().log().all()
                 .extract().as(ErrorResponse.class);
 
@@ -113,19 +114,20 @@ public class pathAcceptanceTest {
        When : 관리자가 연결되어 있지 않은 출발역의 ID와 도착역의 ID를 통해 paths를 요청하면,
        Then : 관리자는 경로의 구간 조회에 실패한다. */
     @DisplayName("경로 조회를 실패한다. 출발역과 도착역은 연결되어 있어야한다.")
+    @Test
     public void paths_find_fail2() {
         // when
         var 경로_조회_결과 = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/paths?source=" + 교대역 + "&target=" + 용산역)
+                .when().get("/paths?source=" + 교대역.getId() + "&target=" + 용산역.getId())
                 .then().log().all()
                 .extract().as(ErrorResponse.class);
 
         // then
         Assertions.assertAll(
-                () -> assertEquals(경로_조회_결과.getStatus(), PATH_NOT_FOUND.getStatus()),
-                () -> assertEquals(경로_조회_결과.getCode(), PATH_NOT_FOUND),
-                () -> assertEquals(경로_조회_결과.getDescription(), "경로를 찾을 수 없습니다.")
+                () -> assertEquals(경로_조회_결과.getStatus(), PATH_NOT_FOUND_TARGET_STATION.getStatus()),
+                () -> assertEquals(경로_조회_결과.getCode(), PATH_NOT_FOUND_TARGET_STATION.getCode()),
+                () -> assertEquals(경로_조회_결과.getDescription(), PATH_NOT_FOUND_TARGET_STATION.getDescription())
         );
 
     }
@@ -134,19 +136,20 @@ public class pathAcceptanceTest {
        When : 관리자가 존재하지 않은 출발역의 ID와 도착역의 ID를 통해 paths를 요청하면,
        Then : 관리자는 경로의 구간 조회에 실패한다. */
     @DisplayName("경로 조회를 실패한다. 존재하는 출발역과 도착역만 경로 조회가 가능하다.")
+    @Test
     public void paths_find_fail3() {
         // when
         var 경로_조회_결과 = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/paths?source=" + "존재하지_않는_역_1" + "&target=" + "존재하지_않는_역_2")
+                .when().get("/paths?source=" + "10" + "&target=" + "11")
                 .then().log().all()
                 .extract().as(ErrorResponse.class);
 
         // then
         Assertions.assertAll(
                 () -> assertEquals(경로_조회_결과.getStatus(), STATION_NOT_FOUND.getStatus()),
-                () -> assertEquals(경로_조회_결과.getCode(), STATION_NOT_FOUND),
-                () -> assertEquals(경로_조회_결과.getDescription(), "역을 찾을 수 없습니다.")
+                () -> assertEquals(경로_조회_결과.getCode(), STATION_NOT_FOUND.getCode()),
+                () -> assertEquals(경로_조회_결과.getDescription(), STATION_NOT_FOUND.getDescription())
         );
     }
 }
