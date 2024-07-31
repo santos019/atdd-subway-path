@@ -2,8 +2,10 @@ package nextstep.subway.path.service;
 
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.service.LineService;
+import nextstep.subway.path.dto.GraphModel;
+import nextstep.subway.path.dto.Path;
 import nextstep.subway.section.entity.Section;
-import nextstep.subway.station.dto.StationPathsResponse;
+import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.entity.Station;
 import nextstep.subway.station.exception.StationException;
@@ -32,58 +34,52 @@ public class PathFinder {
     }
 
     @Transactional
-    public StationPathsResponse retrieveStationPath(Long source, Long target) {
-        if (source == target) {
+    public PathResponse retrieveStationPath(Long source, Long target) {
+        if (source.equals(target)) {
             throw new StationException(String.valueOf(PATH_DUPLICATE_STATION));
         }
 
-        Station sourceStation = stationService.getStationByIdOrThrow(source);
-        Station targetStation = stationService.getStationByIdOrThrow(target);
+        stationService.getStationByIdOrThrow(source);
+        stationService.getStationByIdOrThrow(target);
         List<Line> lineList = lineService.getAllLines();
 
-        List<StationResponse> stationResponseList = new ArrayList<>();
-        WeightedMultigraph weightedMultigraph = setDijkstraGraph(lineList);
-        validateHasSourceAndTarget(weightedMultigraph, source, target);
-        DijkstraShortestPath<Long, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath(weightedMultigraph);
+        GraphModel graphModel = createGraphModel(lineList, source, target);
 
-        GraphPath<Long, DefaultWeightedEdge> path = shortestPath.getPath(source, target);
+        DijkstraShortestPath<Long, DefaultWeightedEdge> shortestPath =
+                new DijkstraShortestPath<>(graphModel.getGraph());
+        Path path = new Path(shortestPath.getPath(source, target));
 
-        if (path == null) {
+        if (path.getVertexList() == null || path.getVertexList().isEmpty()) {
             throw new StationException(String.valueOf(PATH_NOT_FOUND));
         }
-        List<Long> shortPaths = path.getVertexList();
-        double totalDistance = path.getWeight();
 
-        for (Long stationId : shortPaths) {
+        List<StationResponse> stationResponseList = new ArrayList<>();
+        for (Long stationId : path.getVertexList()) {
             Station station = stationService.getStationByIdOrThrow(stationId);
             stationResponseList.add(new StationResponse(station.getId(), station.getName()));
         }
 
-        return new StationPathsResponse(stationResponseList, totalDistance);
+        return new PathResponse(stationResponseList, path.getWeight());
     }
 
-    private void validateHasSourceAndTarget(WeightedMultigraph<Long, DefaultWeightedEdge> graph, Long source, Long target) {
-        if (!graph.containsVertex(source)) {
-            throw new StationException(String.valueOf(PATH_NOT_FOUND_SOURCE_STATION));
-        }
-
-        if (!graph.containsVertex(target)) {
-            throw new StationException(String.valueOf(PATH_NOT_FOUND_TARGET_STATION));
-        }
+    private void validateHasSourceAndTarget(GraphModel graph, Long source, Long target) {
+        graph.containsVertex(source);
+        graph.containsVertex(target);
     }
 
-    private WeightedMultigraph setDijkstraGraph(List<Line> lineList) {
-        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph(DefaultWeightedEdge.class);
+    private GraphModel createGraphModel(List<Line> lineList, Long source, Long target) {
+        WeightedMultigraph<Long, DefaultWeightedEdge> graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
+        GraphModel graphModel = new GraphModel(graph);
 
         for (Line line : lineList) {
             List<Section> sectionList = line.getSections().getSections();
             for (Section section : sectionList) {
-                graph.addVertex(section.getUpStation().getId());
-                graph.addVertex(section.getDownStation().getId());
-                graph.setEdgeWeight(graph.addEdge(section.getUpStation().getId(), section.getDownStation().getId()), section.getDistance());
+                graphModel.addEdge(section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
             }
         }
 
-        return graph;
+        validateHasSourceAndTarget(graphModel, source, target);
+
+        return graphModel;
     }
 }

@@ -3,7 +3,7 @@ package nextstep.subway.path;
 import io.restassured.RestAssured;
 import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.station.dto.StationPathsResponse;
+import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.Assertions;
@@ -81,7 +81,7 @@ public class pathAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/paths?source=" + 교대역.getId() + "&target=" + 양재역.getId())
                 .then().log().all()
-                .extract().response().body().as(StationPathsResponse.class);
+                .extract().response().body().as(PathResponse.class);
 
         // then
         assertEquals(경로_조회_결과.getStationResponseList(), List.of(교대역, 남부터미널역, 양재역));
@@ -125,9 +125,9 @@ public class pathAcceptanceTest {
 
         // then
         Assertions.assertAll(
-                () -> assertEquals(경로_조회_결과.getStatus(), PATH_NOT_FOUND_TARGET_STATION.getStatus()),
-                () -> assertEquals(경로_조회_결과.getCode(), PATH_NOT_FOUND_TARGET_STATION.getCode()),
-                () -> assertEquals(경로_조회_결과.getDescription(), PATH_NOT_FOUND_TARGET_STATION.getDescription())
+                () -> assertEquals(경로_조회_결과.getStatus(), PATH_NOT_FOUND.getStatus()),
+                () -> assertEquals(경로_조회_결과.getCode(), PATH_NOT_FOUND.getCode()),
+                () -> assertEquals(경로_조회_결과.getDescription(), PATH_NOT_FOUND.getDescription())
         );
 
     }
