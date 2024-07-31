@@ -79,6 +79,7 @@ public class Sections {
         if (sections.size() <= 1) {
             throw new SectionException(String.valueOf(SECTION_NOT_PERMISSION_COUNT_TOO_LOW));
         }
+        isExistSection(section);
 
         Section originalNextSection = section.getNextSection();
         Section originalPrevSection = section.getPreviousSection();
@@ -87,6 +88,14 @@ public class Sections {
         deleteMiddleSection(originalPrevSection, originalNextSection, section);
 
         sections.remove(section);
+    }
+
+    private void isExistSection (Section section) {
+        Optional<Section> findSection = sections.stream().filter(sectionValue -> sectionValue.equals(section))
+                .findAny();
+        if(findSection.isEmpty()) {
+            throw new SectionException(String.valueOf(SECTION_NOT_PERMISSION_COUNT_TOO_LOW));
+        }
     }
 
     public Section getRemoveTargetSection(Long stationId) {
