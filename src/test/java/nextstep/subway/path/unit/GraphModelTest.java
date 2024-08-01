@@ -1,7 +1,7 @@
 package nextstep.subway.path.unit;
 
 import nextstep.subway.line.entity.Line;
-import nextstep.subway.path.dto.GraphModel;
+import nextstep.subway.path.domain.GraphModel;
 import nextstep.subway.path.dto.Path;
 import nextstep.subway.path.exception.PathException;
 import nextstep.subway.section.entity.Section;

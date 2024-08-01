@@ -64,6 +64,6 @@ public class Path {
                 return section.getDownStation();
             }
         }
-        throw new PathException(String.valueOf(PATH_NOT_FOUND));
+        return null;
     }
 }

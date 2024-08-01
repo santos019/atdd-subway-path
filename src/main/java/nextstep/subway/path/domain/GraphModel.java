@@ -1,12 +1,17 @@
-package nextstep.subway.path.dto;
+package nextstep.subway.path.domain;
 
 import nextstep.subway.line.entity.Line;
+import nextstep.subway.path.dto.Path;
 import nextstep.subway.path.exception.PathException;
 import nextstep.subway.section.entity.Section;
+import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.entity.Station;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static nextstep.subway.common.constant.ErrorCode.PATH_DUPLICATE_STATION;
@@ -60,10 +65,6 @@ public class GraphModel {
         }
     }
 
-    public WeightedMultigraph<Long, DefaultWeightedEdge> getGraph() {
-        return graph;
-    }
-
     public void containsVertex(Long vertexId) {
         if (!graph.containsVertex(vertexId)) {
             throw new PathException(String.valueOf(PATH_NOT_FOUND));
@@ -81,5 +82,9 @@ public class GraphModel {
         if(source.equals(target)) {
             throw new PathException(String.valueOf(PATH_DUPLICATE_STATION));
         }
+    }
+
+    public WeightedMultigraph<Long, DefaultWeightedEdge> getGraph() {
+        return this.graph;
     }
 }
