@@ -1,9 +1,6 @@
 package nextstep.subway.path.acceptance;
 
-import io.restassured.RestAssured;
-import nextstep.subway.common.dto.ErrorResponse;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.Assertions;
@@ -12,13 +9,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import static nextstep.subway.common.constant.ErrorCode.*;
 import static nextstep.subway.util.LineStep.지하철_노선_생성;
+import static nextstep.subway.util.PathStep.경로_조회;
+import static nextstep.subway.util.PathStep.경로_조회_실패;
 import static nextstep.subway.util.SectionStep.지하철_구간_등록;
 import static nextstep.subway.util.StationStep.지하철_역_등록;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -77,11 +75,7 @@ public class pathAcceptanceTest {
     @Test
     public void paths_find_success() {
         // when
-        var 경로_조회_결과 = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/paths?source=" + 교대역.getId() + "&target=" + 양재역.getId())
-                .then().log().all()
-                .extract().response().body().as(PathResponse.class);
+        var 경로_조회_결과 = 경로_조회(교대역.getId(), 양재역.getId());
 
         // then
         assertEquals(경로_조회_결과.getStationResponseList(), List.of(교대역, 남부터미널역, 양재역));
@@ -95,11 +89,7 @@ public class pathAcceptanceTest {
     @Test
     public void paths_find_fail() {
         // when
-        var 경로_조회_결과 = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/paths?source=" + 교대역.getId() + "&target=" + 교대역.getId())
-                .then().log().all()
-                .extract().as(ErrorResponse.class);
+        var 경로_조회_결과 = 경로_조회_실패(교대역.getId(), 교대역.getId());
 
         // then
         Assertions.assertAll(
@@ -117,11 +107,7 @@ public class pathAcceptanceTest {
     @Test
     public void paths_find_fail2() {
         // when
-        var 경로_조회_결과 = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/paths?source=" + 교대역.getId() + "&target=" + 용산역.getId())
-                .then().log().all()
-                .extract().as(ErrorResponse.class);
+        var 경로_조회_결과 = 경로_조회_실패(교대역.getId(), 용산역.getId());
 
         // then
         Assertions.assertAll(
@@ -138,12 +124,12 @@ public class pathAcceptanceTest {
     @DisplayName("경로 조회를 실패한다. 존재하는 출발역과 도착역만 경로 조회가 가능하다.")
     @Test
     public void paths_find_fail3() {
+        // given
+        var 존재하지_않는_역_1 = 10L;
+        var 존재하지_않는_역_2 = 11L;
+
         // when
-        var 경로_조회_결과 = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/paths?source=" + "10" + "&target=" + "11")
-                .then().log().all()
-                .extract().as(ErrorResponse.class);
+        var 경로_조회_결과 = 경로_조회_실패(존재하지_않는_역_1, 존재하지_않는_역_2);
 
         // then
         Assertions.assertAll(

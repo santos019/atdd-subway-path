@@ -16,14 +16,14 @@ public class PathResponseTest {
     @Test
     void getStationResponseList_getDistance() {
         // given
-        List<StationResponse> stationResponses = List.of(
+        var stationResponses = List.of(
                 new StationResponse(1L, "Station1"),
                 new StationResponse(2L, "Station2")
         );
-        Double distance = 20.0;
+        var distance = 20.0;
 
         // when
-        PathResponse pathResponse = new PathResponse().of(stationResponses, distance);
+        var pathResponse = new PathResponse().of(stationResponses, distance);
 
         // then
         assertAll(

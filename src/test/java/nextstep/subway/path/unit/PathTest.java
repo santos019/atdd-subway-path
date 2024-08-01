@@ -18,7 +18,6 @@ import java.util.List;
 
 import static nextstep.subway.common.constant.ErrorCode.PATH_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 public class PathTest {
 
@@ -27,7 +26,6 @@ public class PathTest {
     Section 강남역_역삼역_구간;
     Sections 구간들;
     Line 신분당선;
-    List<Line> lineList;
     double pathWeight = 10.0;
     Path path;
     GraphPath<Long, DefaultWeightedEdge> mockGraphPath;
@@ -42,7 +40,6 @@ public class PathTest {
         강남역_역삼역_구간 = new Section(강남역, 역삼역, 10L);
         구간들 = new Sections(Collections.singletonList(강남역_역삼역_구간));
         신분당선 = new Line(1L, "신분당선", "red", 15L, 구간들);
-        lineList = Collections.singletonList(신분당선);
         path = new Path(List.of(강남역, 역삼역), pathWeight);
 
     }
