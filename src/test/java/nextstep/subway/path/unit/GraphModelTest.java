@@ -100,20 +100,72 @@ public class GraphModelTest {
         // given
         Section section = new Section(강남역, 역삼역, 5L);
         Sections sections = new Sections(List.of(section));
-        Line line = new Line(1L, "신분당선", "red", 15L, sections);
+        Line 신분당선 = new Line(1L, "신분당선", "red", 15L, sections);
+        List<Line> 지하철_리스트 = Collections.singletonList(신분당선);
         GraphModel graphModel = new GraphModel(1L, 2L);
-        graphModel.createGraphModel(Collections.singletonList(line));
+        graphModel.createGraphModel(지하철_리스트);
 
         // when
-        Path path = graphModel.findShortestPath();
+        Path path = graphModel.findPath(지하철_리스트);
 
         // then
         assertAll(
                 () -> assertNotNull(path),
                 () -> assertEquals(5.0, path.getWeight()),
-                () -> assertEquals(List.of(강남역.getId(), 역삼역.getId()), path.getVertexList())
+                () -> assertEquals(List.of(강남역, 역삼역), path.getStationList())
         );
     }
+
+    @DisplayName("[findShortestPath] lineList가 비어있으면 예외가 발생한다..")
+    @Test
+    void findShortestPath_fail1() {
+        // given
+        Section section = new Section(강남역, 역삼역, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line 신분당선 = new Line(1L, "신분당선", "red", 15L, sections);
+        List<Line> 지하철_리스트 = Collections.singletonList(신분당선);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+        graphModel.createGraphModel(지하철_리스트);
+
+        // when
+        Path path = graphModel.findPath(지하철_리스트);
+
+        // then
+        assertAll(
+                () -> assertNotNull(path),
+                () -> assertEquals(5.0, path.getWeight()),
+                () -> assertEquals(List.of(강남역, 역삼역), path.getStationList())
+        );
+    }
+
+    @DisplayName("[findShortestPath] vertexList가 비어있으면 예외가 발생한다. - null일 경우")
+    @Test
+    void findShortestPath_fail2() {
+        // given
+        Section section = new Section(강남역, 역삼역, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line 신분당선 = new Line(1L, "신분당선", "red", 15L, sections);
+        List<Line> 지하철_리스트 = Collections.singletonList(신분당선);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        assertAll(
+                () -> assertThrows(PathException.class, () -> graphModel.findPath(지하철_리스트))
+                        .getMessage().equals(PATH_NOT_FOUND.getDescription())
+        );
+
+    }
+
+    @DisplayName("[getStationList] lineList와 stationId를 통해 StationList를 생성한다.")
+    @Test
+    void getStationList_success() {}
+
+    @DisplayName("[getStationList] lineList가 비어있으면 비어 있는 StationList를 생성한다.")
+    @Test
+    void getStationList_fail() {}
+
+    @DisplayName("[getStationList] lineList에 StationId가 없다면 예외가 발생한다.")
+    @Test
+    void getStationList_fail2() {}
 
     @DisplayName("[addSectionsToGraph] line을 graph의 Edge에 추가한다.")
     @Test
@@ -220,6 +272,68 @@ public class GraphModelTest {
 
         // when & then
         Assertions.assertThrows(PathException.class, () -> graphModel.validateDuplicate(source, target))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[getStation] stationId에 해당하는 Station을 찾는다. upStation으로 찾는다.")
+    @Test
+    void getStation_success() {
+        // when
+        Section section = new Section(강남역, 역삼역, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line 신분당선 = new Line(1L, "신분당선", "red", 15L, sections);
+        List<Line> 지하철_목록 = List.of(신분당선);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        var 찾은_역 = graphModel.getStation(지하철_목록, 강남역.getId());
+
+        // then
+        assertAll(
+                () -> assertEquals(찾은_역, 강남역)
+        );
+    }
+
+    @DisplayName("[getStation] stationId에 해당하는 Station을 찾는다. downStation으로 찾는다.")
+    @Test
+    void getStation_success2() {
+        // when
+        Section section = new Section(강남역, 역삼역, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line 신분당선 = new Line(1L, "신분당선", "red", 15L, sections);
+        List<Line> 지하철_목록 = List.of(신분당선);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        var 찾은_역 = graphModel.getStation(지하철_목록, 역삼역.getId());
+
+        // then
+        assertAll(
+                () -> assertEquals(찾은_역, 역삼역)
+        );
+    }
+
+    @DisplayName("[getStation] stationId에 해당하는 Station을 찾지 못하면 예외가 발생한다.")
+    @Test
+    void getStation_fail1() {
+        // when
+        Section section = new Section(강남역, 역삼역, 5L);
+        Sections sections = new Sections(List.of(section));
+        Line 신분당선 = new Line(1L, "신분당선", "red", 15L, sections);
+        List<Line> 지하철_목록 = List.of(신분당선);
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // then
+        assertThrows(PathException.class, () -> graphModel.getStation(지하철_목록, 3L))
+                .getMessage().equals(PATH_NOT_FOUND.getDescription());
+    }
+
+    @DisplayName("[getStation] lineList가 비어 있으면 예외가 발생한다.")
+    @Test
+    void getStation_fail2() {
+        // when
+        GraphModel graphModel = new GraphModel(1L, 2L);
+
+        // when & then
+        assertThrows(PathException.class, () -> graphModel.getStation(List.of(), 3L))
                 .getMessage().equals(PATH_NOT_FOUND.getDescription());
     }
 }

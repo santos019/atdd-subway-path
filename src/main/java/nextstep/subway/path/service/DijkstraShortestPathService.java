@@ -12,6 +12,6 @@ public class DijkstraShortestPathService implements PathService {
     public PathResponse findPath(Long source, Long target, List<Line> lineList) {
         GraphModel graphModel = new GraphModel(source, target);
         Path path = graphModel.findPath(lineList);
-        return path.createPathResponse(path, lineList);
+        return path.createPathResponse();
     }
 }

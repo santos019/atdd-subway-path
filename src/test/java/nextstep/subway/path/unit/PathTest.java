@@ -18,7 +18,6 @@ import java.util.List;
 
 import static nextstep.subway.common.constant.ErrorCode.PATH_NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PathTest {
@@ -39,15 +38,12 @@ public class PathTest {
         강남역 = new Station(1L, "강남역");
         역삼역 = new Station(2L, "역삼역");
 
-        mockGraphPath = mock(GraphPath.class);
-        when(mockGraphPath.getVertexList()).thenReturn(List.of(강남역.getId(), 역삼역.getId()));
-        when(mockGraphPath.getWeight()).thenReturn(pathWeight);
 
         강남역_역삼역_구간 = new Section(강남역, 역삼역, 10L);
         구간들 = new Sections(Collections.singletonList(강남역_역삼역_구간));
         신분당선 = new Line(1L, "신분당선", "red", 15L, 구간들);
         lineList = Collections.singletonList(신분당선);
-        path = new Path(mockGraphPath);
+        path = new Path(List.of(강남역, 역삼역), pathWeight);
 
     }
 
@@ -56,7 +52,7 @@ public class PathTest {
     public void getVertexList_getWeight() {
         // then
         assertAll(
-                () -> assertEquals(List.of(강남역.getId(), 역삼역.getId()), path.getVertexList()),
+                () -> assertEquals(List.of(강남역, 역삼역), path.getStationList()),
                 () -> assertEquals(pathWeight, path.getWeight())
         );
     }
@@ -65,7 +61,7 @@ public class PathTest {
     @Test
     void createPathResponse_success() {
         // when
-        var pathResponse = path.createPathResponse(path, lineList);
+        var pathResponse = path.createPathResponse();
 
         // then
         assertAll(
@@ -78,65 +74,15 @@ public class PathTest {
         );
     }
 
-    @DisplayName("[createPathResponse] path의 vertexList가 비어 있으면 예외가 발생한다.")
+    @DisplayName("[createPathResponse] path의 stationList가 비어 있으면 예외가 발생한다.")
     @Test
     void createPathResponse_fail1() {
         // given
-        when(mockGraphPath.getVertexList()).thenReturn(List.of());
-        var path = new Path(mockGraphPath);
+        var path = new Path(List.of(), pathWeight);
 
         // when & then
-        assertThrows(PathException.class, () -> path.createPathResponse(path, lineList))
+        assertThrows(PathException.class, () -> path.createPathResponse())
                 .getMessage().equals(PATH_NOT_FOUND.getDescription());
     }
 
-    @DisplayName("[createPathResponse] lineList가 비어 있으면 예외가 발생한다.")
-    @Test
-    void createPathResponse_fail2() {
-        // when & then
-        assertThrows(PathException.class, () -> path.createPathResponse(path, List.of()))
-                .getMessage().equals(PATH_NOT_FOUND.getDescription());
-    }
-
-    @DisplayName("[getStation] stationId에 해당하는 Station을 찾는다. upStation으로 찾는다.")
-    @Test
-    void getStation_success() {
-        // when
-        var 찾은_역 = path.getStation(lineList, 강남역.getId());
-
-        // then
-        assertAll(
-                () -> assertEquals(찾은_역, 강남역)
-        );
-    }
-
-    @DisplayName("[getStation] stationId에 해당하는 Station을 찾는다. downStation으로 찾는다.")
-    @Test
-    void getStation_success2() {
-        // when
-        var 찾은_역 = path.getStation(lineList, 역삼역.getId());
-
-        // then
-        assertAll(
-                () -> assertEquals(찾은_역, 역삼역)
-        );
-    }
-
-    @DisplayName("[getStation] stationId에 해당하는 Station을 찾지 못하면 예외가 발생한다.")
-    @Test
-    void getStation_fail1() {
-        // when & then
-        assertThrows(PathException.class, () -> path.getStation(lineList, 3L))
-                .getMessage().equals(PATH_NOT_FOUND.getDescription());
-    }
-
-    @DisplayName("[getStation] lineList가 비어 있으면 예외가 발생한다.")
-    @Test
-    void getStation_fail2() {
-        var path = new Path(mockGraphPath);
-
-        // when & then
-        assertThrows(PathException.class, () -> path.getStation(List.of(), 3L))
-                .getMessage().equals(PATH_NOT_FOUND.getDescription());
-    }
 }

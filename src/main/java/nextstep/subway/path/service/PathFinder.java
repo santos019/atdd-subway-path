@@ -2,8 +2,6 @@ package nextstep.subway.path.service;
 
 import nextstep.subway.line.entity.Line;
 import nextstep.subway.line.service.LineService;
-import nextstep.subway.path.domain.GraphModel;
-import nextstep.subway.path.dto.Path;
 import nextstep.subway.path.dto.PathResponse;
 import nextstep.subway.station.service.StationService;
 import org.springframework.stereotype.Service;
@@ -29,9 +27,6 @@ public class PathFinder {
         validateStationExist(source, target);
         List<Line> lineList = lineService.getAllLines();
         return pathService.findPath(source, target, lineList);
-//        GraphModel graphModel = new GraphModel(source, target);
-//        Path path = graphModel.findPath(lineList);
-//        return path.createPathResponse(path, lineList);
     }
 
     private void validateStationExist(Long source, Long target) {
